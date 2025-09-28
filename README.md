@@ -246,7 +246,7 @@ changelog filename variants.
 
 ````
 
-Und, ja: like so, push passes. Worksheet preserved. Orchestra applauds. The bunny is pleased.
+Und, ja, like so: push passes. Worksheet preserved. Orchestra applauds. The bunny is pleased.
 
 ---
 
@@ -284,7 +284,7 @@ sequenceDiagram
 > “Every comment is a note. Every note must be played.”
 > — Johann Sebastian Bach, Kapellmeister of Commits, 2025
 
-“Ja, BunBun, zis is vhy I adore ze source codes. Like a score of music — every line, every brace, a note in ze grand composition. My favorite language?” *He pauses, eyes glinting with mischief.* “C… natürlich.”
+Ja, BunBun, zis is vhy I adore ze source codes. Like a score of music — every line, every brace, a note in ze grand composition. My favorite language? *He pauses, eyes glinting with mischief.* C… natürlich.
 
 *BunBun’s ear flicks. Another Red Bull can hisses open.*
 
