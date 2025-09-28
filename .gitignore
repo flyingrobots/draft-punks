@@ -1,0 +1,57 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+.fseventsd
+.Spotlight-V100
+.Trashes
+*.swp
+.apdisk
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+venv/
+ENV/
+env/
+build/
+dist/
+.eggs/
+*.egg-info/
+.Python
+.python-version
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+coverage.xml
+*.cover
+*.coverage
+htmlcov/
+
+# Editors / tooling
+.vscode/
+.idea/
+
+# Obsidian
+.obsidian/
+.obsidian-cache/
+.obsidian-temporary/
+.obsidian-trash/
+
+# Markdown editors / backups
+*.md~
+*.md.bak
+*.md.orig
+*.md.lock
+
+# Logs
+*.log
+
+# Local history
+.history/
