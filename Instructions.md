@@ -79,17 +79,19 @@ jobs:
 ## Completing a Worksheet
 Every worksheet entry mirrors a CodeRabbit thread. Replace each `{response}` with one of the templated blocks below.
 
-**Accepted**
+### Accepted
+
 ```markdown
-> [!note]- **Accepted**
+> [!info]- **Accepted**
 > **What changed:** Fixed indentation in commit def5678
 > **Lesson learned:** Consistent spacing improves readability
 > **Prevention:** Added pre-commit hook for formatting
 ```
 
-**Rejected**
+### Rejected
+
 ```markdown
-> [!CAUTION]- **Rejected**
+> [!warning]- **Rejected**
 > **Rationale:** Performance cost outweighs marginal benefit
 > **Trade-offs:** Maintainability over micro-optimization
 > **Future consideration:** Revisit if profiling shows bottleneck

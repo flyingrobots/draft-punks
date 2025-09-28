@@ -1,24 +1,29 @@
 # 🎼🎵🎶 Draft Punks
 
+**Draft Punks** keeps sprawling CodeRabbit reviews manageable. It collects every review comment into a Markdown worksheet, guides you through accepting or rejecting each note, and blocks pushes until every decision is documented.
+
+## TL;DR
+- Harvest CodeRabbit review threads into a local worksheet with `{response}` placeholders.
+- Fill each placeholder with an **Accepted** or **Rejected** response (plus rationale).
+- A pre-push hook refuses to let you push until the worksheet is complete.
+- The Apply Feedback workflow pushes your decisions back to GitHub once you commit the worksheet.
+
+<img alt="P.R. PhiedBach & BunBun" src="assets/images/PRPhiedbachUndBunBun.webp" width="600" />
+
 ## 🐇 CodeRabbit’s Poem-TL;DR
 
-> I flood your PR, my notes cascade,
-> Too many threads, the page degrades.
-> But PhiedBach scores them, quill in hand,
-> A worksheet formed, your decisions we demand.
-> No push may pass till all’s reviewed,
-> Install the flows — ten lines, you’re cued. 🐇✨
+> I flood your PR, my notes cascade,  
+> Too many threads, the page degrades.  
+> But PhiedBach scores them, quill in hand,  
+> A worksheet formed, your decisions we demand.  
+> No push may pass till all’s reviewed,  
+> Install the flows — ten lines, you’re cued. 🐇✨. 
 
 _PhiedBach adjusts his spectacles: “Ja. Das is accurate. Let us rehearse, und together your code vil become a beautiful symphony of syntax.”_
 
 ---
 
 ## Guten Tag, Meine Freunde
-
-![P.R. PhiedBach & BunBun](assets/images/PRPhiedbachUndBunBun-thumb.webp)
-
-> *"Every comment is a note. Every note must be played."*  
-> — Johann Sebastian Bach, Kapellmeister of Commits, 2025
 
 The door creaks. RGB light pours out like stained glass at a nightclub. Inside: bicycles hang from hooks, modular synths blink, an anime wall scroll flutters gently in the draft. An 80-inch screen above a neon fireplace displays a GitHub Pull Request in cathedral scale. Vape haze drifts like incense.
 
@@ -99,57 +104,137 @@ Zat ist all! Ten lines of YAML, and your review chaos becomes beautiful counterp
 
 ---
 
-## Ze Response Templates
+## Ein Example Worksheet
 
-Each feedback receives one of two treatments in ze worksheet:
+Here est ein sample, taken from a real project!
 
-**Accepted** — "Ja, zis wisdom I embrace"
+````markdown
+---
+title: Code Review Feedback
+description: Preserved review artifacts and rationale.
+audience: [contributors]
+domain: [quality]
+tags: [review]
+status: archive
+---
+
+# Code Review Feedback
+
+| Date | Agent | SHA | Branch | PR |
+|------|-------|-----|--------|----|
+| 2025-09-16 | Codex | `e4f3f906eb454cb103eb8cc6899df8dfbf6e2349` | [feat/changelog-and-sweep-4](https://github.com/neuroglyph/git-mind/tree/feat/changelog-and-sweep-4 "neuroglyph/git-mind:feat/changelog-and-sweep-4") | [PR#169](https://github.com/neuroglyph/git-mind/pull/169) |
+
+## Instructions
+
+Please carefully consider each of the following feedback items, collected from a GitHub code review.
+
+Please act on each item by fixing the issue, or rejecting the feedback. Please update this document and fill out the information below each feedback item by replacing the text surrounded by curly braces. 
+
+### Accepted Feedback Template
+
+Please use the following template to record your acceptance.
+
 ```markdown
+
 > [!note]- **Accepted**
-> **What changed:** Fixed indentation in commit def5678  
-> **Lesson learned:** Consistent spacing improves readability  
-> **Prevention:** Added pre-commit hook for formatting
+> | Confidence | Remarks |
+> |------------|---------|
+> | <confidence_score_out_of_10> | <confidence_rationale> |
+>
+> ## Lesson Learned
+> 
+> <lesson>
+>
+> ## What did you do to address this feedback?
+>
+> <what_you_did>
+>
+> ## Regression Avoidance Strategy
+>
+> <regression_avoidance_strategy>
+>
+> ## Notes
+>
+> <any_additional_context_or_say_none>
+
 ```
 
-**Rejected** — "Nein, but mit rationale und respect"
+### Rejected Feedback Template
+
+Please use the following template to record your rejections.
+
 ```markdown
+
 > [!CAUTION]- **Rejected**
-> **Rationale:** Performance cost outweighs marginal benefit  
-> **Trade-offs:** Maintainability over micro-optimization  
-> **Future consideration:** Revisit if profiling shows bottleneck
+> | Confidence | Remarks |
+> |------------|---------|
+> | <confidence_score_out_of_10> | <confidence_rationale> |
+>
+> ## Rejection Rationale
+>
+> <rationale>
+>
+> ## What you did instead
+>
+> <what_you_did>
+>
+> ## Tradeoffs considered
+>
+> <pros_and_cons>
+>
+> ## What would make you change your mind
+>
+> <change_mind_conditions>
+>
+> ## Future Plans
+>
+> <future_plans>
+
 ```
 
 ---
 
-## Example Worksheet
+## CODE REVIEW FEEDBACK
 
-```markdown
-# PR Review Worksheet — PR42 @ deadbeef
+The following section contains the feedback items, extracted from the code review linked above. Please read each item and respond with your decision by injecting one of the two above templates beneath the feedback item.
 
-### "nit: spacing"
+### Broaden CHANGELOG detection in pre-push hook
+
 ```text
-BunBun: Indent with 4 spaces, not 3.
+.githooks/pre-push around line 26: the current check only matches the exact
+filename 'CHANGELOG.md' (case-sensitive) and will miss variants like
+'CHANGES.md', 'CHANGELOG' or different casing and paths; update the git diff
+grep to use the quoted "$range", use grep -i (case-insensitive) and -E with a
+regex that matches filenames or paths ending with CHANGELOG or CHANGES
+optionally followed by .md, e.g. use grep -iqE
+'(^|.*/)(CHANGELOG|CHANGES)(\.md)?$' so the hook correctly detects all common
+changelog filename variants.
 ```
 
-Decision: Accepted  
-Response: Fixed in commit 1234abcd.
+> [!note]- **Accepted**
+> | Confidence | Remarks |
+> |------------|---------|
+> | 9/10 | Regex and quoting are straightforward; covers common variants. |
+>
+> ## Lesson Learned
+>
+> Hooks must be resilient to common filename variants and path locations. Quote git ranges and use case-insensitive, anchored patterns.
+>
+> ## What did you do to address this feedback?
+>
+> - Updated `.githooks/pre-push` to quote the diff range and use `grep -iqE '(^|.*/)(CHANGELOG|CHANGES)(\.md)?$'` on `git diff --name-only` output.
+> - Improved error message to mention supported variants and how to add an entry.
+>
+> ## Regression Avoidance Strategy
+>
+> - Keep the hook in-repo and exercised by contributors on push to `main`.
+> - Documented bypass via `HOOKS_BYPASS=1` to reduce friction when needed.
+>
+> ## Notes
+>
+> Consider adding a small CI job that enforces a changelog change on PRs targeting `main` to complement local hooks.
 
-### "needs test for edge case"
-```text
-BunBun: Missing test when input=0.
-```
-
-Decision: Rejected  
-Response: Handled upstream; see PR 77.
-
-### "rename variable"
-```text
-BunBun: `foo` → `session_ref`
-```
-
-Decision: Accepted  
-Response: Renamed in commit 5678efgh.
-```
+````
 
 Push passes. Worksheet preserved. Orchestra applauds.
 
@@ -181,6 +266,9 @@ sequenceDiagram
         DP->>GH: Apply decisions\npost back to threads
     end
 ```
+
+> *"Every comment is a note. Every note must be played."*  
+> — Johann Sebastian Bach, Kapellmeister of Commits, 2025
 
 ---
 
