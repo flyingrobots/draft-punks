@@ -303,13 +303,11 @@ BunBun insists: no unresolved `{response}` placeholders may pass.
 HOOKS_BYPASS=1 git push
 ```
 
-At that moment, a chime interrupts PhiedBach.
+*At that moment, a chime interrupts PhiedBach.*
 
-"Oh! Someone has pushed an update to a pull request. Bitte, let me handle zis one, BunBun."
+Oh! Someone has pushed an update to a pull request. Bitte, let me handle zis one, BunBun.
 
-*He approaches the keyboard like a harpsichordist at court. Adjusting his spectacles with both index fingers, he begins to type a review comment, painfully slow, each key a ceremony.*
-
-*He adjusts his spectacles. The room hushes. He approaches a clacky keyboard as if it were an exotic instrument. With two careful index fingers, he begins to type a comment. Each keystroke is a ceremony.*
+*He approaches the keyboard like a harpsichordist at court. Adjusting his spectacles. The room hushes. He approaches a clacky keyboard as if it were an exotic instrument. With two careful index fingers, he begins to type a comment. Each keystroke is a ceremony.*
 
 **PhiedBach** (murmuring):
 
