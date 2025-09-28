@@ -311,7 +311,9 @@ PhiedBach settles back into his wingback chair by the neon fireplace. BunBun cru
 
 PhiedBach adjusts his spectacles and returns to his ledger. "I do not know how to return to 1725," he mutters, "aber vielleicht… it is better zis way."
 
-Velkommen to ze future of code review.
+---
+
+## Velkommen to ze future of code review.
 
 **One More Merge… It's Never Over.**
 **Harder. Better. Faster. Structured.**
