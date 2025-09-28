@@ -57,7 +57,7 @@ on:
 
 jobs:
   seed:
-    uses: neuroglyph/draft-punks/.github/workflows/seed-review.yml@v1.0.0
+    uses: flyingrobots/draft-punks/.github/workflows/seed-review.yml@v1.0.0
     secrets: inherit
 ```
 
@@ -70,7 +70,7 @@ on:
 
 jobs:
   apply:
-    uses: neuroglyph/draft-punks/.github/workflows/apply-feedback.yml@v1.0.0
+    uses: flyingrobots/draft-punks/.github/workflows/apply-feedback.yml@v1.0.0
     secrets: inherit
 ```
 

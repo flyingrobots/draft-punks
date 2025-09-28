@@ -93,7 +93,7 @@ on:
 
 jobs:
   seed:
-    uses: neuroglyph/draft-punks/.github/workflows/seed-review.yml@v1.0.0
+    uses: flyingrobots/draft-punks/.github/workflows/seed-review.yml@v1.0.0
     secrets: inherit
 ```
 
@@ -106,7 +106,7 @@ on:
 
 jobs:
   apply:
-    uses: neuroglyph/draft-punks/.github/workflows/apply-feedback.yml@v1.0.0
+    uses: flyingrobots/draft-punks/.github/workflows/apply-feedback.yml@v1.0.0
     secrets: inherit
 ```
 
@@ -130,8 +130,8 @@ status: archive
 
 # Code Review Feedback
 
-| Date | Agent | SHA | Branch | PR |
-|------|-------|-----|--------|----|
+| Date       | Agent | SHA                                        | Branch                                                                                                                                                | PR                                                        |
+| ---------- | ----- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
 | 2025-09-16 | Codex | `e4f3f906eb454cb103eb8cc6899df8dfbf6e2349` | [feat/changelog-and-sweep-4](https://github.com/neuroglyph/git-mind/tree/feat/changelog-and-sweep-4 "neuroglyph/git-mind:feat/changelog-and-sweep-4") | [PR#169](https://github.com/neuroglyph/git-mind/pull/169) |
 
 ## Instructions
