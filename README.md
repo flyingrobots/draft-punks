@@ -1,12 +1,17 @@
 # 🎼🎵🎶 Draft Punks
 
-**Draft Punks** keeps sprawling CodeRabbit reviews manageable. It collects every review comment into a Markdown worksheet, guides you through accepting or rejecting each note, and blocks pushes until every decision is documented.
+**Draft Punks** keeps sprawling CodeRabbit reviews manageable. 
+
+This GitHub workflow collects every CodeRabbit review comment into a Markdown worksheet, guides you through accepting or rejecting each note, and blocks pushes until every decision is documented.
 
 ## TL;DR
+
 - Harvest CodeRabbit review threads into a local worksheet with `{response}` placeholders.
 - Fill each placeholder with an **Accepted** or **Rejected** response (plus rationale).
 - A pre-push hook refuses to let you push until the worksheet is complete.
 - The Apply Feedback workflow pushes your decisions back to GitHub once you commit the worksheet.
+
+---
 
 <img alt="P.R. PhiedBach & BunBun" src="assets/images/PRPhiedbachUndBunBun.webp" width="600" />
 
@@ -25,33 +30,38 @@ _PhiedBach adjusts his spectacles: “Ja. Das is accurate. Let us rehearse, und 
 
 ## Guten Tag, Meine Freunde
 
-The door creaks. RGB light pours out like stained glass at a nightclub. Inside: bicycles hang from hooks, modular synths blink, an anime wall scroll flutters gently in the draft. An 80-inch screen above a neon fireplace displays a GitHub Pull Request in cathedral scale. Vape haze drifts like incense.
+_The door creaks. RGB light pours out like stained glass at a nightclub. Inside: bicycles hang from hooks, modular synths blink, an anime wall scroll flutters gently in the draft. An 80-inch screen above a neon fireplace displays a GitHub Pull Request in cathedral scale. Vape haze drifts like incense._
 
-A white rabbit sits calm at a ThinkPad plastered with Linux stickers. Beside him, spectacles sliding low, quill in hand, rises a man in powdered wig and Crocs — though here he is known as P.R. PhiedBach.
+_A white rabbit sits calm at a ThinkPad plastered with Linux stickers. Beside him, spectacles sliding low, quill in hand, rises a man in powdered wig and Crocs — a man who looks oddly lost in time, out of place, but nevertheless, delighted to see you._
 
 **PhiedBach** (bowing, one hand on his quill like a baton):  
-*Ah… guten abend. Velkommen, velkommen to ze LED Bike Shed Dungeon. You arrive for your… how do you say… pull request? Sehr gut.*
 
-*I am P.R. PhiedBach — Pieter Rabbit PhiedBach. But in truth, I am Johann Sebastian Bach. Ja, ja, that Bach. Once Kapellmeister in Leipzig, composer of fugues und cantatas. Then one evening I followed a small rabbit down a very strange hole, and when I awoke... it was 2025. Das ist sehr verwirrend.*
+Ah… guten abend. Velkommen, velkommen to ze **LED Bike Shed Dungeon**. You arrive for your… how do you say… pull request? Sehr gut.
 
-He gestures conspiratorially toward the rabbit.  
-*And zis… zis is CodeRabbit. Mein assistant. Mein virtuoso. Mein BunBun (isn't he cute?).*
+I am **P.R. PhiedBach** — *Pieter Rabbit PhiedBach*. But in truth, I am Johann Sebastian Bach. Ja, ja, that Bach. Once Kapellmeister in Leipzig, composer of fugues und cantatas. Then one evening I followed a small rabbit down a very strange hole, and when I awoke... it was 2025. Das ist sehr verwirrend.
 
-BunBun's ears twitch. He does not look up. His paws tap a key, and the PR on the giant screen ripples red, then green.
+*He gestures conspiratorially toward the rabbit.*
+
+And zis… zis is **CodeRabbit**. Mein assistant. Mein virtuoso. Mein BunBun (isn't he cute?).
+
+*BunBun's ears twitch. He does not look up. His paws tap a key, and the PR on the giant screen ripples red, then green.*
 
 **PhiedBach** (delighted):  
-*You see? Calm as a pond, but behind his silence there is clarity. He truly understands your code. I? I hear only music. He is ze concertmaster; I am only ze man waving his arms.*
 
-From the synth rack, a pulsing bassline begins. PhiedBach claps once.  
-*Ah, ze Daft Punks again! Always two of them, helmets like Teutonic knights. Their music is fugue for robots. BunBun insists it helps him code. Even mein Crocs want to dance.*
+You see? Calm as a pond, but behind his silence there is clarity. He truly understands your code. I? I hear only music. He is ze concertmaster; I am only ze man waving his arms.
+
+*From the synth rack, a pulsing bassline begins. PhiedBach claps once.*
+
+Ah, ze Daft Punks again! Delightful. Their helmets are like Teutonic knights. Their music is captivating, is it not? BunBun insists it helps him code. For me? It makes mein Crocs want to dance.
 
 ---
 
 ## Ze Problem: When Genius Becomes Cacophony
 
-GitHub cannot withstand BunBun's brilliance. His reviews arrive like a thousand voices at once — so many comments, so fastidious, that the page itself slows to a dirge. Browsers wheeze. Threads collapse under their own counterpoint.
+GitHub cannot withstand BunBun's brilliance. His reviews arrive like a thousand voices at once; so many comments, so fastidious, that the page itself slows to a dirge. Browsers wheeze. Threads collapse under their own counterpoint.
 
 Your choices are terrible:
+
 - Ignore ze feedback (barbaric!)
 - Drown in ze overwhelming symphony
 - Click "Resolve" without truly answering ze note
@@ -100,7 +110,7 @@ jobs:
     secrets: inherit
 ```
 
-Zat ist all! Ten lines of YAML, and your review chaos becomes beautiful counterpoint.
+Zat ist all! You see? Just ten lines of YAML, and your review chaos becomes beautiful counterpoint.
 
 ---
 
@@ -236,11 +246,13 @@ changelog filename variants.
 
 ````
 
-Push passes. Worksheet preserved. Orchestra applauds.
+Und, ja: like so, push passes. Worksheet preserved. Orchestra applauds. The bunny is pleased.
 
 ---
 
 ## Ze Workflow
+
+Perhaps this illustration will help, ja?
 
 ```mermaid
 sequenceDiagram
@@ -267,8 +279,14 @@ sequenceDiagram
     end
 ```
 
-> *"Every comment is a note. Every note must be played."*  
+*PhiedBach adjusts his spectacles, tapping the quill against the desk. You see him scribble on the parchment:*
+
+> “Every comment is a note. Every note must be played.”
 > — Johann Sebastian Bach, Kapellmeister of Commits, 2025
+
+“Ja, BunBun, zis is vhy I adore ze source codes. Like a score of music — every line, every brace, a note in ze grand composition. My favorite language?” *He pauses, eyes glinting with mischief.* “C… naturlich.”
+
+*BunBun’s ear flicks. Another Red Bull can hisses open.*
 
 ---
 
@@ -285,31 +303,56 @@ BunBun insists: no unresolved `{response}` placeholders may pass.
 HOOKS_BYPASS=1 git push
 ```
 
+At that moment, a chime interrupts PhiedBach.
+
+"Oh! Someone has pushed an update to a pull request. Bitte, let me handle zis one, BunBun."
+
+*He approaches the keyboard like a harpsichordist at court. Adjusting his spectacles with both index fingers, he begins to type a review comment, painfully slow, each key a ceremony.*
+
+*He adjusts his spectacles. The room hushes. He approaches a clacky keyboard as if it were an exotic instrument. With two careful index fingers, he begins to type a comment. Each keystroke is a ceremony.*
+
+**PhiedBach** (murmuring):
+
+Ah… the L… (tap)… she hides in the English quarter.
+The G… (tap)… a proud letter, very round.
+The T… (tap)… a strict little cross—good posture.
+The M… (tap)… two mountains, very Alpine.
+
+*He pauses, radiant, then reads it back with absurd gravitas:*
+
+“LGTM.”
+
+*He beams as if he has just finished a cadenza. It took eighty seconds. CodeRabbit does not interrupt; he merely thumps his hind leg in approval.*
+
 ---
 
 ## Philosophie: Warum „Draft Punks“?
 
-Because every pull request begins as a draft — rough, unpolished, full of potential. Because BunBun's reviews are robotic precision. Because ze Daft Punks — always two of them — compose fugues for robots.
+Ah, yes. Where were we? Ja! 
 
-When I pronounce it mit ze hard "s," BunBun's ears twitch. It pleases me. Kleine Freude for such a complex mind — like a well-resolved chord.
+Because every pull request begins as a draft, rough, unpolished, full of potential. Und because BunBun's reviews are robotic precision. Und because ze wonderful Daft Punks — always the two of them — compose fugues for robots.
 
-PhiedBach closes his ledger with deliberate care. From his desk drawer, he produces a folded bit of parchment and presses it with a wax seal — shaped, naturally, like a rabbit. As he rises to hand you the sealed document, his eyes drift momentarily to the anime wall scroll, where the warrior maiden hangs frozen mid-transformation.
+*PhiedBach closes his ledger with deliberate care. From his desk drawer, he produces a folded bit of parchment and presses it with a wax seal — shaped, naturally, like a rabbit. As he rises to hand you the sealed document, his eyes drift momentarily to the anime wall scroll, where the warrior maiden hangs frozen mid-transformation.*
 
-He sighs, almost fondly.
+*He sighs, almost fondly.*
 
-"Ja… ze anime? I confess I do not understand it myself, but BunBun is rather fond of zis particular series. Something about magical girls und friendship conquering darkness. I must admit..." he pauses, adjusting his spectacles, "ze opening theme song is surprisingly well-composed. Very catchy counterpoint."
+Ja… ze anime? I confess I do not understand it myself, but BunBun is rather fond of zis particular series. Something about magical girls und friendship conquering darkness. I must admit...
 
-He presses the parchment into your hands.
+*He pauses, adjusting his spectacles.*
 
-"Take zis, mein Freund. Your rehearsal begins now. Fill ze worksheet, address each comment mit proper consideration, und push again. When BunBun's threads are resolved und ze pre-push gate approves, you may merge your branch."
+Ze opening theme song is surprisingly well-composed. Very catchy counterpoint.
 
-He waves his quill with ceremonial finality.
+*He presses the parchment into your hands.*
 
-"Now, off mit you. Go make beautiful code. Wir sehen uns wieder."
+Take zis, mein Freund. Your rehearsal begins now. Fill ze worksheet, address each comment mit proper consideration, und push again. When BunBun's threads are resolved und ze pre-push gate approves, you may merge your branch.
 
-PhiedBach settles back into his wingback chair by the neon fireplace. BunBun crushes another Red Bull can with methodical precision, adding it to the wobbling tower. The synthesizer pulses its eternal bassline. The anime maiden watches, silent and eternal, as the RGB lights cycle through their spectrum.
+*He waves his quill with ceremonial finality.*
 
-PhiedBach adjusts his spectacles and returns to his ledger. "I do not know how to return to 1725," he mutters, "aber vielleicht… it is better zis way."
+Now, off mit you. Go make beautiful code. Wir sehen uns wieder.
+
+*PhiedBach settles back into his wingback chair by the neon fireplace. BunBun crushes another Red Bull can with methodical precision, adding it to the wobbling tower. The synthesizer pulses its eternal bassline. The anime maiden watches, silent and eternal, as the RGB lights cycle through their spectrum.*
+
+*PhiedBach adjusts his spectacles and returns to his ledger.* "I do not know how to return to 1725," *he mutters,* "aber vielleicht… it is better zis way."
 
 ---
 
