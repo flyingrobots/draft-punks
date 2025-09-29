@@ -2,9 +2,9 @@ name: Apply PR Feedback Replies
 
 on:
   push:
-    branches-ignore: [ main ]
+    branches-ignore: [main]
     paths:
-      - 'docs/code-reviews/**.md'
+      - "docs/code-reviews/**.md"
 
 permissions:
   contents: read

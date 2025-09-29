@@ -10,28 +10,37 @@ summary and exits with status 1.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 from typing import List, Tuple
-
-import requests
+from urllib import error, request
 
 GRAPHQL_ENDPOINT = "https://api.github.com/graphql"
 CODERABBIT_LOGIN = "coderabbitai"
 
 
 def github_graphql(token: str, query: str, variables: dict) -> dict:
-    response = requests.post(
-        GRAPHQL_ENDPOINT,
-        json={"query": query, "variables": variables},
-        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
-        timeout=30,
-    )
-    if response.status_code != 200:
+    payload = json.dumps({"query": query, "variables": variables}).encode("utf-8")
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+    }
+    req = request.Request(GRAPHQL_ENDPOINT, data=payload, headers=headers, method="POST")
+
+    try:
+        with request.urlopen(req, timeout=30) as response:
+            body = response.read()
+    except error.HTTPError as exc:
+        error_body = exc.read().decode("utf-8", "replace")
         raise RuntimeError(
-            f"GitHub GraphQL API returned {response.status_code}: {response.text}"
-        )
-    data = response.json()
+            f"GitHub GraphQL API returned {exc.code}: {error_body}"
+        ) from exc
+    except error.URLError as exc:
+        raise RuntimeError(f"GitHub GraphQL request failed: {exc}") from exc
+
+    data = json.loads(body.decode("utf-8"))
     if "errors" in data:
         raise RuntimeError(f"GitHub GraphQL error: {data['errors']}")
     return data["data"]

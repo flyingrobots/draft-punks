@@ -11,7 +11,7 @@ Authentication: set GITHUB_TOKEN in the environment.
 
 Usage:
   python3 tools/review/seed_feedback_from_github.py \
-    --owner neuroglyph --repo git-mind --pr 169 \
+    --owner flyingrobots --repo draft-punks --pr 69 \
     [--commit <sha>] [--out docs/code-reviews]
 
 If --commit is omitted, the PR head SHA is used.
