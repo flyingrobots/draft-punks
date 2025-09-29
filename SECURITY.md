@@ -56,6 +56,18 @@ BunBun may stack his Red Bull cans carelessly to ze heavens, but vulnerabilities
 To report in good faith is to join ze orchestra of order.  
 To disclose in public before ze patch? Barbaric. Out of tempo. Nein. Verbotten.
 
+## Safe Harbor
+If you make a good-faith effort to comply with this policy, we will not pursue civil or criminal action. Do not access user data, pivot laterally, persist, or degrade availability. Limit testing to your own accounts.
+
+## In Scope / Out of Scope
+- In scope: vulnerabilities affecting supported versions and first-party services.  
+- Out of scope: social engineering, SPF/DMARC reports, rate-limit/DoS, third-party dependencies unless exploitable in our usage, outdated unsupported versions.
+
+## Severity & SLAs
+We use CVSS (v3.1/v4.0 when available) to assign severity. Targets: Critical – 7 days, High – 14 days, Medium – 30 days, Low – best-effort.
+
+## CVE & Advisory
+We publish advisories via GitHub Security Advisories and request CVEs. We are not a CNA.
 ---
 
 *Signed,*  
