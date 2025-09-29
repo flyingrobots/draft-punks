@@ -132,7 +132,7 @@ status: archive
 
 | Date       | Agent | SHA                                        | Branch                                                                                                                                                | PR                                                        |
 | ---------- | ----- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| 2025-09-16 | Codex | `e4f3f906eb454cb103eb8cc6899df8dfbf6e2349` | [feat/changelog-and-sweep-4](https://github.com/neuroglyph/git-mind/tree/feat/changelog-and-sweep-4 "neuroglyph/git-mind:feat/changelog-and-sweep-4") | [PR#169](https://github.com/neuroglyph/git-mind/pull/169) |
+| 2025-09-16 | Codex | `e4f3f906eb454cb103eb8cc6899df8dfbf6e2349` | [feat/changelog-and-sweep-4](https://github.com/flyingrobots/git-mind/tree/feat/changelog-and-sweep-4 "flyingrobots/git-mind:feat/changelog-and-sweep-4") | [PR#169](https://github.com/flyingrobots/git-mind/pull/169) |
 
 ## Instructions
 
