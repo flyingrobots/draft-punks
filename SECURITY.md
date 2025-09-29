@@ -22,7 +22,7 @@ Instead, you vill whisper directly to ze Kapellmeister und his rabbit.
 
 - **Contact (preferred)**: [security@flyingrobots.dev](mailto:security@flyingrobots.dev)  
 - **Alternate**: Repository’s “Report a vulnerability” link (GitHub Security Advisories)  
-- **Encryption**: PGP required — Key ID: [ADD_KEY_ID], Fingerprint: [ADD_FPR], Key: [ADD_URL]  
+- **Encryption (optional until key is live)**: We accept plaintext reports today; ve vill announce ze PGP key (ID, fingerprint, und download URL) in SECURITY.md und `.well-known/security.txt` once published.  
 - **Contents of your report**:  
   - Concise description of ze flaw  
   - Affected version(s)  
