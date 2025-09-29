@@ -20,13 +20,15 @@ Anything older is marked as obsolete; no security corrections vill be written fo
 If you perceive a crack in ze harmony — a vulnerability, an opening for mischief — you must not announce it upon ze public stage.  
 Instead, you vill whisper directly to ze Kapellmeister und his rabbit.
 
-- **Contact**: james@flyingrobots.dev  
+- **Contact (preferred)**: [security@flyingrobots.dev](mailto:security@flyingrobots.dev)  
+- **Alternate**: Repository’s “Report a vulnerability” link (GitHub Security Advisories)  
+- **Encryption**: PGP required — Key ID: [ADD_KEY_ID], Fingerprint: [ADD_FPR], Key: [ADD_URL]  
 - **Contents of your report**:  
   - Concise description of ze flaw  
   - Affected version(s)  
   - Steps to reproduce (as precise as a fugue subject)  
-- **Acknowledgement**: Within **72 hours** you vill receive ze nod of receipt.  
-- **Updates**: At least once per **7 business days**, you vill hear from us until resolution or decline.  
+- **Acknowledgement**: Within **72 hours**.  
+- **Updates**: At least once per **7 business days** (Mon–Fri, US holidays excluded; UTC).  
 - **Resolution**: Should ze vulnerability be judged valid, a patch vill be issued upon ze supported version(s).  
   Credit vill be given unless anonymity is requested.  
 
