@@ -35,3 +35,12 @@ class GitSubprocess(GitPort):
             return True
         except Exception:
             return False
+    def add_and_commit(self, paths: list[str], message: str) -> bool:
+        try:
+            if not paths:
+                return False
+            subprocess.run(['git','add', *paths], check=True)
+            subprocess.run(['git','commit','-m', message], check=True)
+            return True
+        except Exception:
+            return False
