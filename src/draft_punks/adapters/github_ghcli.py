@@ -14,7 +14,7 @@ query($o:String!, $n:String!, $num:Int!, $after:String){
       reviewThreads(first:100, after:$after){
         pageInfo{ hasNextPage endCursor }
         nodes{
-          id path comments(first:100){ nodes{ body } }
+          id path comments(first:100){ nodes{ body author{ login } } }
         }
       }
     }
@@ -29,7 +29,16 @@ class GhCliGitHub(GitHubPort):
         self._runner = runner or (lambda argv: SimpleNamespace(stdout="{}", returncode=0))
 
     def list_open_prs(self) -> List[PullRequest]:
-        return []
+        argv = ['gh','pr','list','-R', f'{self._owner}/{self._repo}','--state','open','--json','number,headRefName,title']
+        cp = self._runner(argv)
+        try:
+            data = json.loads(cp.stdout or '[]')
+        except Exception:
+            data = []
+        prs: List[PullRequest] = []
+        for item in data or []:
+            prs.append(PullRequest(number=item.get('number',0), head_ref=item.get('headRefName') or '', title=item.get('title') or ''))
+        return prs
 
     def _gh_graphql(self, query: str, vars: dict) -> dict:
         argv = ['gh','api','graphql','-F',f"o={self._owner}",'-F',f"n={self._repo}",'-F',f"num={vars['num']}"]
@@ -53,7 +62,7 @@ class GhCliGitHub(GitHubPort):
             pr = (((resp.get('data') or {}).get('repository') or {}).get('pullRequest') or {})
             rt = (pr.get('reviewThreads') or {})
             for node in (rt.get('nodes') or []):
-                comments = [Comment(body=(c.get('body') or '')) for c in ((node.get('comments') or {}).get('nodes') or [])]
+                comments = [Comment(body=(c.get('body') or ''), author=((c.get('author') or {}).get('login') or '')) for c in ((node.get('comments') or {}).get('nodes') or [])]
                 yield ReviewThread(id=node.get('id') or '', path=node.get('path') or '', comments=comments)
             if not (rt.get('pageInfo') or {}).get('hasNextPage'):
                 break

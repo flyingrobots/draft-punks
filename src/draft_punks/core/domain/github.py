@@ -1,10 +1,11 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 @dataclass
 class Comment:
     body: str
+    author: Optional[str] = ""
 
 @dataclass
 class ReviewThread:

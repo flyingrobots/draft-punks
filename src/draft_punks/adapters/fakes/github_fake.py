@@ -14,7 +14,7 @@ class FakeGitHub(GitHubPort):
                 yield ReviewThread(
                     id=t['id'],
                     path=t.get('path',''),
-                    comments=[Comment(body=c.get('body','')) for c in t.get('comments', [])]
+                    comments=[Comment(body=c.get('body',''), author=c.get('author','')) for c in t.get('comments', [])]
                 )
             if not page.get('has_next'):
                 break
