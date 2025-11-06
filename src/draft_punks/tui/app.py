@@ -44,5 +44,15 @@ class PRPicker(Vertical):
             lv.append(ListItem(Static(line)))
         yield lv
 
+    @on(ListView.Selected)
+    def go_comments(self, event: ListView.Selected):
+        text = event.item.renderable.plain
+        import re
+        m = re.search(r"#(\d+)", text)
+        if m:
+            pr = int(m.group(1))
+            from draft_punks.tui.comments import CommentViewer
+            self.app.push_screen(CommentViewer(pr))
+
 if __name__ == "__main__":
     DraftPunksApp().run()
