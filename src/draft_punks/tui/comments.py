@@ -30,6 +30,8 @@ class CommentViewer(Widget):
     def compose(self) -> ComposeResult:
         self.lv = ListView(id='comments')
         self.detail = Static("Select a comment", id='detail')
+        self.header = Static('', id='header')
+        yield self.header
         yield Horizontal(
             Vertical(self.lv, id='left', classes='panel'),
             Vertical(self.detail, id='right', classes='panel'),
@@ -46,6 +48,8 @@ class CommentViewer(Widget):
                 self._flat.append((th.path,c))
                 counts_by_file[th.path]=counts_by_file.get(th.path,0)+1
                 label = c.body.splitlines()[0][:80]
+                if self._auto_all or th.path in self._auto_files:
+                    label = '[AUTO] ' + label
                 if (c.author or '').lower() == 'coderabbitai':
                     label = f"BunBun says: {label}"
                 self.lv.append(ListItem(Static(label)))
@@ -60,6 +64,18 @@ class CommentViewer(Widget):
                 if k == idx:
                     md = c.body
                     self.detail.update(f"````markdown\n{md}\n````")
+        # header update
+        idx=event.index
+        path,_=self._flat[idx]
+        total_pr=len(self._flat); total_file=self._counts_by_file.get(path,1)
+        # compute index-in-file
+        pos_file=1
+        for i,(p,_) in enumerate(self._flat):
+            if i==idx: break
+            if p==path: pos_file+=1
+        pct=int((idx+1)*100/max(1,total_pr))
+        self.header.update(f"PR #{self.pr_number} ({self.head_ref}) • {path}
+Comment {idx+1} of {total_pr} ({pos_file} of {total_file} in this file)\n{pct}%")
                     cfg = ConfigFS()
                     speak_comment_if_allowed(cfg, OSXSayVoice(), author_login=c.author or '', text=c.body)
                     return
