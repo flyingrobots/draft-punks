@@ -4,6 +4,7 @@ import os
 import shlex
 import subprocess
 from typing import List, Optional, Protocol
+from draft_punks.adapters.config_fs import ConfigFS
 
 
 def build_command_for_prompt(prompt: str) -> List[str]:
@@ -14,6 +15,11 @@ def build_command_for_prompt(prompt: str) -> List[str]:
     """
     tpl = os.environ.get("DP_LLM_CMD")
     provider = os.environ.get("DP_LLM", "").strip().lower()
+    if not tpl and not provider:
+        cfg = ConfigFS()
+        data = cfg.read() or {}
+        provider = (data.get('llm') or '').strip().lower()
+        tpl = data.get('llm_cmd')
     if tpl:
         # Simple template replacement; split with shlex for argv
         return shlex.split(tpl.replace("{prompt}", prompt))
