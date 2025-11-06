@@ -234,7 +234,7 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--pr", type=int, help="Pull request number")
     ap.add_argument("--out", help="Write output to file instead of stdout")
     # Allow pr=123 shorthand
-    known, _ = ap.parse_known_args([])
+    _, _ = ap.parse_known_args([])
 
     kv = parse_kv_args(argv)
     # Re-parse with provided argv
