@@ -7,7 +7,7 @@ from textual import on
 from draft_punks.adapters.config_fs import ConfigFS
 from draft_punks.core.services.voice import enable_bonus_mode
 from draft_punks.adapters.voice_say import OSXSayVoice
-from draft_punks.adapters.github_ghcli import GhCliGitHub
+from draft_punks.adapters.github_select import select as select_github
 from draft_punks.adapters.util.repo import owner_repo_from_env_or_git
 
 SECRET = "BACH"

@@ -6,7 +6,7 @@ from textual.widget import Widget
 from textual.screen import ModalScreen
 from textual import on
 
-from draft_punks.adapters.github_ghcli import GhCliGitHub
+from draft_punks.adapters.github_select import select as select_github
 from draft_punks.adapters.util.repo import owner_repo_from_env_or_git
 from draft_punks.adapters.config_fs import ConfigFS
 from draft_punks.adapters.voice_say import OSXSayVoice
@@ -78,7 +78,7 @@ class CommentViewer(Widget):
 
     def on_mount(self):
         owner, repo = owner_repo_from_env_or_git()
-        gh = GhCliGitHub(owner=owner, repo=repo)
+        gh = select_github(owner, repo)
         try:
             if self._logger:
                 setattr(gh, 'progress', lambda page, total: self._logger.info('page {} • {} comments so far…'.format(page, total)))
@@ -165,7 +165,7 @@ class CommentViewer(Widget):
                     sha = gs.head_sha(); (self._logger or TextualLogger(self.app.log)).info('Applied {} suggestion hunk(s) to {}.'.format(applied, meta['path']))
                     data = (ConfigFS().read() or {})
                     if data.get('reply_on_success') and sha:
-                        owner, repo = owner_repo_from_env_or_git(); gh = GhCliGitHub(owner=owner, repo=repo)
+                        owner, repo = owner_repo_from_env_or_git(); gh = select_github(owner, repo)
                         thread_id = self._thread_ids[idx]
                         if thread_id:
                             gh.post_reply(thread_id, 'Addressed in {} — @coderabbitai'.format(sha))
@@ -200,7 +200,7 @@ class CommentViewer(Widget):
             self._commits_by_file.setdefault(meta['path'], []).extend(commits)
             data = (ConfigFS().read() or {})
             if data.get('reply_on_success'):
-                owner, repo = owner_repo_from_env_or_git(); gh = GhCliGitHub(owner=owner, repo=repo)
+                owner, repo = owner_repo_from_env_or_git(); gh = select_github(owner, repo)
                 idx = meta['idx_pr'] - 1
                 if 0 <= idx < len(self._thread_ids):
                     thread_id = self._thread_ids[idx]
