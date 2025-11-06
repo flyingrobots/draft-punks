@@ -44,3 +44,9 @@ class GitSubprocess(GitPort):
             return True
         except Exception:
             return False
+    def head_sha(self) -> str:
+        try:
+            cp = subprocess.run(['git','rev-parse','HEAD'], capture_output=True, text=True, check=True)
+            return (cp.stdout or '').strip()
+        except Exception:
+            return ''

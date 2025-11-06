@@ -55,6 +55,19 @@ class GhCliGitHub(GitHubPort):
         except Exception:
             return {}
 
+    def post_reply(self, thread_id: str, body: str) -> bool:
+        mutation = (
+            "mutation($id:ID!,$body:String!){ addPullRequestReviewThreadReply("
+            "input:{pullRequestReviewThreadId:$id, body:$body}){ clientMutationId } }"
+        )
+        argv = ['gh','api','graphql','-f', f'query={mutation}','-F', f'id={thread_id}','-F', f'body={body}']
+        try:
+            cp = self._runner(argv)
+            # Minimal validation
+            return cp.returncode == 0
+        except Exception:
+            return False
+
     def iter_review_threads(self, pr_number: int) -> Iterable[ReviewThread]:
         after = None
         while True:
