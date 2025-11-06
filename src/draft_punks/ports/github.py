@@ -1,0 +1,7 @@
+from __future__ import annotations
+from typing import Iterable, List, Protocol
+from draft_punks.core.domain.github import PullRequest, ReviewThread
+
+class GitHubPort(Protocol):
+    def list_open_prs(self) -> List[PullRequest]: ...
+    def iter_review_threads(self, pr_number: int) -> Iterable[ReviewThread]: ...
