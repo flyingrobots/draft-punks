@@ -30,17 +30,83 @@ import urllib.error
 API = "https://api.github.com"
 
 
-def gh_get(path: str, token: str):
-    req = urllib.request.Request(API + path)
+def gh_get_with_headers(url: str, token: str):
+    """GET a full URL and return (json, headers)."""
+    req = urllib.request.Request(url)
     req.add_header("Accept", "application/vnd.github+json")
     if token:
         req.add_header("Authorization", f"Bearer {token}")
     try:
         with urllib.request.urlopen(req) as r:
-            return json.loads(r.read().decode("utf-8"))
+            data = json.loads(r.read().decode("utf-8"))
+            headers = {k.lower(): v for k, v in r.headers.items()}
+            return data, headers
     except urllib.error.HTTPError as e:
         msg = e.read().decode("utf-8", errors="ignore")
-        raise SystemExit(f"GitHub API error {e.code} on {path}: {msg}")
+        raise SystemExit(f"GitHub API error {e.code} on {url}: {msg}")
+
+
+def gh_get(path: str, token: str):
+    """GET a repository-relative path and return JSON body only."""
+    data, _ = gh_get_with_headers(API + path, token)
+    return data
+
+
+def parse_link_header(link_header: str) -> dict:
+    """Parse GitHub Link header into a dict of {rel: url}."""
+    rels = {}
+    if not link_header:
+        return rels
+    parts = [p.strip() for p in link_header.split(",")]
+    for p in parts:
+        if ";" not in p:
+            continue
+        url_part, rel_part = p.split(";", 1)
+        url = url_part.strip().strip("<>")
+        if "rel=" in rel_part:
+            rel = rel_part.split("rel=", 1)[1].strip().strip('"')
+            rels[rel] = url
+    return rels
+
+
+def gh_get_all(path: str, token: str):
+    """GET and paginate over all pages for a given resource path.
+
+    Appends per_page=100 and follows Link: rel="next" until exhausted.
+    Returns a list aggregated across all pages.
+    """
+    import urllib.parse as up
+
+    url = API + path
+    # Ensure per_page=100 is present
+    parsed = up.urlparse(url)
+    qs = up.parse_qsl(parsed.query, keep_blank_values=True)
+    # Remove any existing per_page/page to avoid duplication
+    qs = [(k, v) for (k, v) in qs if k not in ("per_page", "page")]
+    qs.append(("per_page", "100"))
+    url = up.urlunparse(parsed._replace(query=up.urlencode(qs)))
+
+    items = []
+    while True:
+        data, headers = gh_get_with_headers(url, token)
+        if isinstance(data, list):
+            items.extend(data)
+        else:
+            # Some endpoints may return objects; try common list fields
+            for key in ("items", "nodes"):
+                if key in data and isinstance(data[key], list):
+                    items.extend(data[key])
+                    break
+            else:
+                raise SystemExit("Unexpected GitHub response shape during pagination")
+
+        links = parse_link_header(headers.get("link", ""))
+        next_url = links.get("next")
+        if next_url:
+            url = next_url
+            continue
+        break
+    return items
 
 
 def normalize(s: str) -> str:
@@ -66,10 +132,10 @@ def main():
     if not head_sha:
         raise SystemExit("Unable to determine PR head SHA. Pass --commit explicitly.")
 
-    # Collect review comments
-    rev_comments = gh_get(pr_path + "/comments?per_page=100", token)
-    # Collect issue comments (discussion)
-    iss_comments = gh_get(f"/repos/{args.owner}/{args.repo}/issues/{args.pr}/comments?per_page=100", token)
+    # Collect review comments (paginated)
+    rev_comments = gh_get_all(pr_path + "/comments", token)
+    # Collect issue comments (discussion, paginated)
+    iss_comments = gh_get_all(f"/repos/{args.owner}/{args.repo}/issues/{args.pr}/comments", token)
 
     # Build output path
     out_dir = pathlib.Path(args.out) / f"PR{args.pr}"
@@ -136,4 +202,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

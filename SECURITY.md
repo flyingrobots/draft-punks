@@ -1,9 +1,18 @@
 # Security Policy
 
+For discovery, see also: `https://flyingrobots.dev/.well-known/security.txt`.  
+
+Privacy: We store vulnerability reports in restricted systems, retain PII only as needed for communication, und purge within 180 days after closure.  
+
 ## Supported Versions
 
-Hear me, contributors and maintainers: only ze most current score shall be defended from discord.  
-All other editions? Archived in ze library, never to be patched again.
+Only ze **latest stable major release** receives ze vigilance of BunBun's keen ears und my quill (currently: 1.x).  
+
+Vhen a new major symphony is released, ze previous major becomes silent forever—no more security patches!  
+
+Vithin ze supported major, only ze latest minor movement gets attention (no N-1 minors).  
+
+Ve vill announce zese EOL dates in RELEASES.md ze moment a new major composition debuts.  
 
 | Version | Supported          |
 | ------- | ------------------ |
