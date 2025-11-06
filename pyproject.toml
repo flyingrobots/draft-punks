@@ -4,8 +4,13 @@ version = "0.0.1"
 description = "CLI to wrangle CodeRabbit reviews into a humane TDD flow"
 authors = [{name = "Draft Punks"}]
 requires-python = ">=3.11"
-dependencies = ["typer>=0.12", "rich>=13.7"]
+dependencies = ["typer>=0.12", "rich>=13.7", "textual>=0.44"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-q"
+
+[project.optional-dependencies]
+ dev = [
+  "pytest>=7",
+ ]
