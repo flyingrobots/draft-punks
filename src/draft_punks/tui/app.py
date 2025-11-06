@@ -39,6 +39,7 @@ class DraftPunksApp(App):
                     self.code = ""
 
 class PRPicker(Vertical):
+    _prs = []
     def compose(self) -> ComposeResult:
         lv = ListView()
         # Placeholder; real list via GitHubPort later
@@ -54,7 +55,12 @@ class PRPicker(Vertical):
         if m:
             pr = int(m.group(1))
             from draft_punks.tui.comments import CommentViewer
-            self.app.push_screen(CommentViewer(pr))
+            head='';
+            try:
+                head=[x.head_ref for x in self._prs if x.number==pr][0]
+            except Exception:
+                pass
+            self.app.push_screen(CommentViewer(pr, head_ref=head, logger=TextualLogger(self.app.log)))
 
 if __name__ == "__main__":
     DraftPunksApp().run()
