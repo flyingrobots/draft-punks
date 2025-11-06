@@ -14,3 +14,6 @@ addopts = "-q"
  dev = [
   "pytest>=7",
  ]
+
+[project.scripts]
+ draft-punks = "draft_punks.entry:run"
