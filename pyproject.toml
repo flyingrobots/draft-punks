@@ -5,6 +5,24 @@ description = "CLI to wrangle CodeRabbit reviews into a humane TDD flow"
 authors = [{name = "Draft Punks"}]
 requires-python = ">=3.11"
 dependencies = ["typer>=0.12", "rich>=13.7", "textual>=0.44", "requests>=2.31"]
+readme = { file = "cli/README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+keywords = ["tui", "cli", "github", "codereview", "coderabbit", "llm", "automation"]
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/flyingrobots/draft-punks"
+Repository = "https://github.com/flyingrobots/draft-punks.git"
+Issues = "https://github.com/flyingrobots/draft-punks/issues"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
@@ -17,3 +35,11 @@ addopts = "-q"
 
 [project.scripts]
  draft-punks = "draft_punks.entry:run"
+ git-mind = "git_mind.cli:run"
+
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/draft_punks"]
