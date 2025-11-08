@@ -84,5 +84,74 @@ def handle_command(mr: MindRepo, payload: Dict[str, Any], session: str | None) -
         commit = mr.write_snapshot(session=session, state=state, op="pr.select", args={"number": number})
         return _ok(id_, {"current_pr": number}, commit)
 
-    return _err(id_, "UNKNOWN_COMMAND", f"unknown cmd: {cmd}", mr.head(session=session))
+    # --- Threads -------------------------------------------------------------
+    if cmd == "thread.list":
+        ok, head = _state_guard(mr, session, expect_state)
+        if not ok:
+            return _err(id_, "STATE_MISMATCH", "expect_state does not match current head", head)
+        state = mr.read_state(session=session)
+        sel = state.get("selection", {})
+        pr_number = sel.get("pr")
+        if not isinstance(pr_number, int):
+            return _err(id_, "INVALID_ARGS", "no PR selected; run pr.select first", head)
+        owner, repo = owner_repo_from_env_or_git(mr.root)
+        gh = select_github(owner, repo)
+        items = []
+        for th in gh.iter_review_threads(pr_number):
+            # Minimal projection for API; more fields can be added later
+            items.append({
+                "id": getattr(th, "id", None),
+                "path": getattr(th, "path", None),
+                "comment_count": len(getattr(th, "comments", []) or []),
+            })
+        state.setdefault("thread_cache", {})
+        state["thread_cache"][str(pr_number)] = items
+        commit = mr.write_snapshot(session=session, state=state, op="thread.list", args={"count": len(items)})
+        return _ok(id_, {"items": items, "total": len(items)}, commit)
 
+    if cmd == "thread.select":
+        ok, head = _state_guard(mr, session, expect_state)
+        if not ok:
+            return _err(id_, "STATE_MISMATCH", "expect_state does not match current head", head)
+        tid = args.get("id")
+        if not isinstance(tid, str) or not tid:
+            return _err(id_, "INVALID_ARGS", "id (str) is required", head)
+        state = mr.read_state(session=session)
+        state.setdefault("selection", {})
+        state["selection"]["thread_id"] = tid
+        commit = mr.write_snapshot(session=session, state=state, op="thread.select", args={"id": tid})
+        return _ok(id_, {"current_thread": tid}, commit)
+
+    if cmd == "thread.show":
+        # read-only helper, but still allowed to be CAS-guarded by caller
+        state = mr.read_state(session=session)
+        sel = state.get("selection", {})
+        tid = args.get("id") or sel.get("thread_id")
+        pr_number = sel.get("pr")
+        if not tid:
+            return _err(id_, "INVALID_ARGS", "no thread selected; pass args.id or run thread.select", mr.head(session=session))
+        if not isinstance(pr_number, int):
+            return _err(id_, "INVALID_ARGS", "no PR selected; run pr.select first", mr.head(session=session))
+        cache = (state.get("thread_cache") or {}).get(str(pr_number)) or []
+        found = next((t for t in cache if t.get("id") == tid), None)
+        if not found:
+            return _err(id_, "NOT_FOUND", f"thread id not in cache for PR {pr_number}", mr.head(session=session))
+        return _ok(id_, found, mr.head(session=session))
+
+    # --- LLM -----------------------------------------------------------------
+    if cmd == "llm.send":
+        ok, head = _state_guard(mr, session, expect_state)
+        if not ok:
+            return _err(id_, "STATE_MISMATCH", "expect_state does not match current head", head)
+        debug = args.get("debug")
+        prompt = args.get("prompt", "")
+        if debug == "success":
+            state = mr.read_state(session=session)
+            commit = mr.write_snapshot(session=session, state=state, op="llm.send", args={"mode": "debug", "result": "success"})
+            return _ok(id_, {"success": True, "commits": ["deadbeef"], "error": "", "prompt": prompt}, commit)
+        if debug == "fail":
+            msg = args.get("error") or "debug failure"
+            return _err(id_, "LLM_DEBUG_FAIL", msg, mr.head(session=session))
+        return _err(id_, "INVALID_ARGS", "llm.send requires debug=success|fail in this build", mr.head(session=session))
+
+    return _err(id_, "UNKNOWN_COMMAND", f"unknown cmd: {cmd}", mr.head(session=session))
