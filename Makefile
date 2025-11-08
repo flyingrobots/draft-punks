@@ -1,7 +1,7 @@
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 
-.PHONY: install uninstall install-dev install-pipx help dev-venv run tui clean-venv
+.PHONY: install uninstall install-dev install-pipx help dev-venv run tui clean-venv bootstrap-git-mind
 
 	help:
 	@echo "Targets:"
@@ -12,6 +12,7 @@ BINDIR ?= $(PREFIX)/bin
 	@echo "  make dev-venv       # create .venv and editable-install for fast iteration"
 	@echo "  make tui            # run TUI from .venv (editable)"
 	@echo "  make run ARGS=...   # run 'draft-punks $(ARGS)' from .venv"
+	@echo "  make bootstrap-git-mind DEST=~/git-mind  # export git-mind skeleton to a new repo"
 
 install:
 	@mkdir -p "$(BINDIR)"
@@ -61,6 +62,9 @@ run:
 clean-venv:
 	rm -rf .venv
 	@echo "Removed .venv"
+
+bootstrap-git-mind:
+	@bash tools/bootstrap-git-mind.sh "$${DEST:-$$HOME/git-mind}"
 install-dev:
 	@BINDIR="$(HOME)/bin"; mkdir -p "$$BINDIR"; \
 	  WRAP="$$BINDIR/draft-punks-dev"; \
