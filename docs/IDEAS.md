@@ -60,3 +60,41 @@ This is a living backlog of ideas that extend the Git‑native operating surface
 - `mind chat post --room <r> --body <text>` → writes chat message
 - `mind cap grant --verb thread.resolve --pr 123 --ttl 6h --to @bot` → publishes capability token
 
+---
+
+## 11) Git‑Backed Redis (KV Over Git)
+
+Goal: Redis‑like semantics (GET/SET/DEL, hashes, sets, counters, TTLs, pub/sub) over Git’s Merkle DAG with offline operation, time‑travel, and sync via remotes.
+
+Data model
+- Namespace → ref: `refs/mind/kv/<ns>`
+- Within a commit tree: keys mapped to paths under `kv/` using a hashed fan‑out (e.g., `kv/ab/cd/<escaped_key>`)
+- Value blob: raw bytes or JSON; optional sidecar meta `meta/<path>.json` with `{ttl, expire_at, etag}`
+- Trailers: `KV-Op: set|del|incr|hset|…`, `KV-Keys: <k1,k2,…>`, `KV-TTL: <seconds>`
+
+Semantics
+- Linearizable per namespace (single ref) with CAS via `update-ref` using previous head (or across multiple refs via `update-ref --stdin`)
+- Transactions: bundle multi‑key ops into one commit; a pipeline is just a batch of ops collapsed into one write
+- TTLs: stored in meta; a background compactor removes/refreshes expired keys by writing a new commit
+- Pub/sub: use message bus; publish under `refs/mind/events/kv/<ns>/<key>/<ts>`
+
+Performance
+- Hot cache: a small in‑memory index for the current head (like Redis), with async persistence to Git; on restart, rebuild from head
+- Compaction: periodic snapshotting (RDB‑like) from an append‑only ops log to a compact tree
+- Large values: store in LFS; the KV tree holds descriptors pointing to LFS pointers
+
+Concurrency
+- Client flow: read head → compute new tree → `commit-tree` → `update-ref <old_head> <new_head>`; retry on mismatch
+- Optional CRDT mode for conflict‑tolerant types (PN‑counters, OR‑sets) to reduce retries in high contention cases
+
+Prototype CLI (sketch)
+- `mind kv get <ns> <key> [--format raw|json]`
+- `mind kv set <ns> <key> <value> [--ttl 60]`
+- `mind kv del <ns> <key>`
+- `mind kv incr <ns> <key> [--by N]`
+- `mind kv hset <ns> <key> <field> <value>` / `hget`
+- `mind kv scan <ns> [--match pattern]`
+- `mind kv serve` (hot cache daemon; JSONL: `kv.get`, `kv.set`, …)
+
+Notes
+- There’s an existing `git-kv` repo in your workspace; we should evaluate and align semantics, then either wrap it as a backend or consolidate here.
