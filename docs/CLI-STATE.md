@@ -169,3 +169,26 @@ flowchart LR
 ## Migration from TUI
 - TUI postponed to backlog. All SPEC flows map to CLI commands with deterministic outputs.
 - Future: a minimal TUI could read/write the same Git‑backed state for a hybrid experience.
+
+### Supported Commands (v0.1)
+- `hello` / `mind.hello` — returns version + repo context
+- `state.show` — returns current state.json
+- `repo.detect` — detects owner/repo and writes snapshot
+- `pr.list` — caches list of open PRs
+- `pr.select { number:int }` — sets current PR
+- `thread.list` — lists threads for the selected PR; caches minimal projection `{id, path, comment_count}`
+- `thread.select { id:str }` — sets current thread id
+- `thread.show [{ id:str }]` — shows details for selected or given thread from cache
+- `llm.send { debug:success|fail, prompt?:str }` — Debug LLM path; success returns `{ success:true, commits:["deadbeef"], error:"", prompt }`; fail returns error `LLM_DEBUG_FAIL`
+
+### Error Schema
+```
+{ "id": "...", "ok": false, "error": { "code": "...", "message": "...", "details"?: {...} }, "state_ref": "<sha>" }
+```
+
+Common codes:
+- `STATE_MISMATCH` — CAS guard failed (pass `expect_state`)
+- `INVALID_ARGS` — missing/invalid args or no selection
+- `NOT_FOUND` — referent missing (e.g., thread not in cache)
+- `UNKNOWN_COMMAND` — unrecognized command
+- `LLM_DEBUG_FAIL` — simulated LLM failure (debug path)

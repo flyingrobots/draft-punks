@@ -42,3 +42,18 @@ Pivot to a CLI-only experience with a Git-backed state repo and JSONL stdio serv
 
 ### What could we have done differently
 Call out environment constraints earlier and consider dual-mode from day one. Favor CLI-first for automation-heavy tools; treat TUI as an optional skin over the same state engine.
+
+## Incident: Local test runner missing (pytest not installed)
+
+Timestamp: 2025-11-08 00:00:00
+
+Task: DP-F-30 / Thread verbs + Debug LLM (tests-first)
+
+### Problem
+The environment lacks `pytest`, so tests could not be executed immediately after adding failing tests.
+
+### Resolution
+Committed failing tests first, then implemented the features. Left tests in place for local/CI execution. Next dev step is `make dev-venv && . .venv/bin/activate && pip install -e .[dev] && pytest`.
+
+### What could we have done differently
+Include a lightweight script or Makefile target that ensures a dev venv with pytest is provisioned before test steps, or run tests inside CI where the toolchain is guaranteed.
