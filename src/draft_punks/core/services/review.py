@@ -23,17 +23,21 @@ def _extract_json(blob: str):
         return None
 
 
+def build_prompt(pr_number: int, head_ref: str, body: str) -> str:
+    return (
+        f"We are processing code review feedback for PR #{pr_number} ({head_ref}).\n"
+        "Respond only with JSON: {\"success\": true|false, \"git_commits\": [\"<sha1>\", ...], \"error\": \"...\"}.\n"
+        f"Feedback:\n{body}\n"
+    )
+
+
 def process_comment(*, pr_number: int, head_ref: str, body: str, llm: LlmPort, git: GitPort, log: LoggingPort) -> List[str]:
     """Send a single reviewer comment to the LLM; parse JSON; validate SHAs.
     Returns a list of accepted commit SHAs.
     Non-JSON is logged and ignored (warn), never raises.
     """
     # Craft minimal prompt now; richer later
-    prompt = (
-        f"We are processing code review feedback for PR #{pr_number} ({head_ref}).\n"
-        "Respond only with JSON: {\"success\": true|false, \"git_commits\": [\"<sha1>\", ...], \"error\": \"...\"}.\n"
-        f"Feedback:\n{body}\n"
-    )
+    prompt = build_prompt(pr_number, head_ref, body)
     try:
         out = llm.run(prompt)
     except Exception as e:
@@ -47,8 +51,10 @@ def process_comment(*, pr_number: int, head_ref: str, body: str, llm: LlmPort, g
             log.markdown(f"```text\n{head}\n```")
         return []
     commits = []
+    # Accept both "git_commits" and legacy "commits"
+    keys = js.get("git_commits") if js.get("git_commits") is not None else js.get("commits")
     if bool(js.get("success")):
-        for s in js.get("git_commits", []) or []:
+        for s in (keys or []):
             if isinstance(s, str) and git.is_commit(s):
                 commits.append(s)
     else:

@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 from typing import Iterable, List, Optional, Callable
 from types import SimpleNamespace
+import subprocess
 from draft_punks.ports.github import GitHubPort
 from draft_punks.core.domain.github import PullRequest, ReviewThread, Comment
 
@@ -22,11 +23,20 @@ query($o:String!, $n:String!, $num:Int!, $after:String){
 }
 """
 
+def _default_runner(argv: List[str]) -> SimpleNamespace:
+    try:
+        cp = subprocess.run(argv, capture_output=True, text=True)
+        return SimpleNamespace(stdout=cp.stdout, returncode=cp.returncode)
+    except Exception:
+        # Fall back to an empty JSON so callers handle gracefully
+        return SimpleNamespace(stdout="{}", returncode=1)
+
+
 class GhCliGitHub(GitHubPort):
     def __init__(self, *, owner: str, repo: str, runner: Optional[Runner] = None):
         self._owner = owner
         self._repo = repo
-        self._runner = runner or (lambda argv: SimpleNamespace(stdout="{}", returncode=0))
+        self._runner = runner or _default_runner
 
     def list_open_prs(self) -> List[PullRequest]:
         argv = ['gh','pr','list','-R', f'{self._owner}/{self._repo}','--state','open','--json','number,headRefName,title']
@@ -64,6 +74,17 @@ class GhCliGitHub(GitHubPort):
         try:
             cp = self._runner(argv)
             # Minimal validation
+            return cp.returncode == 0
+        except Exception:
+            return False
+
+    def resolve_thread(self, thread_id: str) -> bool:
+        mutation = (
+            "mutation($id:ID!){ resolveReviewThread(input:{threadId:$id}){ clientMutationId } }"
+        )
+        argv = ['gh','api','graphql','-f', f'query={mutation}','-F', f'id={thread_id}']
+        try:
+            cp = self._runner(argv)
             return cp.returncode == 0
         except Exception:
             return False

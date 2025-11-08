@@ -65,3 +65,8 @@ class HttpGitHub(GitHubPort):
         mutation = "mutation($id:ID!,$body:String!){ addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$id, body:$body}){ clientMutationId } }"
         resp = self._session.post(GQL_URL, json={'query': mutation, 'variables': {'id': thread_id, 'body': body}}, headers=self._headers(), timeout=30)
         return bool(resp.ok)
+
+    def resolve_thread(self, thread_id: str) -> bool:
+        mutation = "mutation($id:ID!){ resolveReviewThread(input:{threadId:$id}){ clientMutationId } }"
+        resp = self._session.post(GQL_URL, json={'query': mutation, 'variables': {'id': thread_id}}, headers=self._headers(), timeout=30)
+        return bool(resp.ok)

@@ -5,6 +5,14 @@ import shlex
 import subprocess
 from typing import List, Optional, Protocol
 from draft_punks.adapters.config_fs import ConfigFS
+from draft_punks.adapters.config_fs import ConfigFS
+
+
+_CAPS = {
+    # Known capability flags to force JSON when requested
+    'claude': {'force_json_flag': ['--output-format', 'json']},
+    # add others when available
+}
 
 
 def build_command_for_prompt(prompt: str) -> List[str]:
@@ -15,21 +23,37 @@ def build_command_for_prompt(prompt: str) -> List[str]:
     """
     tpl = os.environ.get("DP_LLM_CMD")
     provider = os.environ.get("DP_LLM", "").strip().lower()
+    force_json = False
     if not tpl and not provider:
-        cfg = ConfigFS()
-        data = cfg.read() or {}
+        cfg = ConfigFS(); data = cfg.read() or {}
         provider = (data.get('llm') or '').strip().lower()
         tpl = data.get('llm_cmd')
+        force_json = bool(data.get('force_json'))
+    else:
+        # If env set, still consult config for force_json fallback
+        try:
+            data = ConfigFS().read() or {}
+            force_json = bool(data.get('force_json'))
+        except Exception:
+            force_json = False
     if tpl:
         # Simple template replacement; split with shlex for argv
         return shlex.split(tpl.replace("{prompt}", prompt))
     if provider == "codex":
-        return ["codex", "exec", prompt]
+        argv = ["codex", "exec", prompt]
+        # no known json flag; rely on prompt contract
+        return argv
     if provider == "claude":
-        # Prefer JSON output
-        return ["claude", "-p", prompt, "--output-format", "json"]
+        argv = ["claude", "-p", prompt]
+        if force_json:
+            argv += _CAPS['claude']['force_json_flag']
+        else:
+            argv += ["--output-format", "json"]  # default to json
+        return argv
     if provider == "gemini":
-        return ["gemini", "-p", prompt]
+        argv = ["gemini", "-p", prompt]
+        # no known json flag; rely on prompt contract
+        return argv
     # Default fallback: try to read from DP_LLM_CMD next time
     return ["sh", "-lc", shlex.quote(prompt)]
 

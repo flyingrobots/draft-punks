@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 from typing import Tuple
 from draft_punks.adapters.github_http import HttpGitHub
-from draft_punks.adapters.github_ghcli import GhCliGitHub
+from draft_punks.adapters.github_ghcli import GhCliGitHub, _default_runner
 
 
 def select(owner: str, repo: str):
@@ -12,4 +12,5 @@ def select(owner: str, repo: str):
             return HttpGitHub(owner=owner, repo=repo, token=token)
         except Exception:
             pass
-    return GhCliGitHub(owner=owner, repo=repo)
+    # Use real subprocess-backed runner for gh CLI
+    return GhCliGitHub(owner=owner, repo=repo, runner=_default_runner)

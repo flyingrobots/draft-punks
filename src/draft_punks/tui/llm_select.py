@@ -8,12 +8,27 @@ from draft_punks.adapters.config_fs import ConfigFS
 class LlmSelect(ModalScreen[bool]):
     def compose(self) -> ComposeResult:
         yield Static("Select an LLM provider (persisted per repo):")
-        self.opts = OptionList(
-            OptionList.Option("Codex"),
-            OptionList.Option("Claude (JSON)"),
-            OptionList.Option("Gemini"),
-            OptionList.Option("Other (enter command template)")
-        )
+        self.opts = OptionList()
+        try:
+            self.opts.add_options(
+                "Codex",
+                "Claude (JSON)",
+                "Gemini",
+                "Debug LLM",
+                "Other (enter command template)",
+            )
+        except Exception:
+            # Fallback for very old Textual: append items individually
+            for label in [
+                "Codex",
+                "Claude (JSON)",
+                "Gemini",
+                "Other (enter command template)",
+            ]:
+                try:
+                    self.opts.add_option(label)
+                except Exception:
+                    pass
         yield self.opts
         self.input = Input(placeholder="e.g., myllm -f json -p {prompt}")
         yield self.input
@@ -29,6 +44,8 @@ class LlmSelect(ModalScreen[bool]):
             data.setdefault('llm','claude'); data.pop('llm_cmd', None)
         elif label.startswith("Gemini"):
             data.setdefault('llm','gemini'); data.pop('llm_cmd', None)
+        elif label.startswith("Debug"):
+            data['llm'] = 'debug'; data.pop('llm_cmd', None)
         else:
             # focus input for template
             self.input.focus()
