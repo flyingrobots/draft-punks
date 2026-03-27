@@ -2,6 +2,14 @@
 
 This is a living backlog of ideas that extend the Git‑native operating surface. These are intentionally out of scope for the current sprint, but close to the kernel so we can slot them in with minimal refactoring.
 
+## 0) Doghouse 2.0 Flight Recorder
+- Seed docs live in [`doghouse/`](../doghouse/README.md)
+- Goal: add a black-box recorder for PR state across pushes, rerun checks, and reviewer waves
+- Core objects: `snapshot`, `sortie`, `delta`, `next_action`
+- Output bias: agent-native JSONL plumbing first, human-friendly porcelain later
+- Product stance: keep the BunBun / PhiedBach flavor, but stop forcing the worksheet model to carry the entire PR-state burden
+- Future fit: the worksheet becomes the adjudication layer on top of Doghouse's state reconstruction
+
 ## 1) git‑message‑bus
 - Refs: `refs/mind/events/<topic>/<yyyymmddHHMMssZ>_<id>`
 - Producers: write events as small JSON blobs with trailers (`Bus-Topic`, `Bus-Source`, `Bus-Correlation`)

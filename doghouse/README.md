@@ -1,0 +1,98 @@
+# Doghouse 2.0
+
+The Doghouse is the design bay for the next structural evolution of Draft Punks.
+
+Draft Punks already solves one real problem well: it turns overwhelming review feedback into
+an explicit worksheet and forces a decision. That is the conductor's score.
+
+Doghouse 2.0 is the missing companion mechanic: the black box recorder.
+
+When a PR has been through multiple pushes, rerun checks, and automated reviewer waves, the
+author stops trusting memory. GitHub mixes historical and live state, the CLI is noisy, and
+the worksheet alone cannot answer the most urgent question:
+
+- what changed
+- what matters now
+- what should happen next
+
+## Why This Exists
+
+Draft Punks should not lose its flavor while it grows up.
+
+The goal is not to replace BunBun, PhiedBach, or the ritual of adjudicating comments. The goal
+is to give them a better instrument.
+
+- Draft Punks as the conductor's score
+- Doghouse as the flight recorder
+
+The worksheet system remains the place where decisions are written down. Doghouse adds the
+durable state reconstruction layer that tells the operator what fight they are actually in.
+
+## Working Principle
+
+- Capture trustworthy local PR state first.
+- Prefer agent-native JSONL plumbing over human-friendly prose at the core.
+- Diff semantic review state, not raw JSON.
+- Separate CodeRabbit state from human and Codex reviewer state.
+- Emit a machine-usable next action instead of just more telemetry.
+- Preserve the Draft Punks voice after the mechanic is trustworthy.
+
+## Proposed Plumbing
+
+The first Doghouse 2.0 cut should revolve around three concepts:
+
+- `snapshot`
+  A local point-in-time artifact for PR state.
+- `sortie`
+  A review episode such as `post_push`, `fix_batch`, `merge_check`, or `resume`.
+- `delta`
+  A semantic comparison that explains what changed since the last meaningful sortie.
+
+The eventual agent-native interface should emit JSONL events instead of UI-first prose:
+
+- `doghouse.snapshot`
+- `doghouse.baseline`
+- `doghouse.comparison`
+- `doghouse.delta`
+- `doghouse.next_action`
+- `doghouse.coderabbit`
+
+That plumbing can later feed friendlier TUI or worksheet surfaces without coupling the core
+mechanic to one presentation.
+
+## Relationship To Current Draft Punks
+
+Current Draft Punks is strongest at:
+
+- harvesting review comments
+- forcing accept/reject decisions
+- preserving rationale
+- refusing to let unresolved worksheet placeholders slip through
+
+Doghouse 2.0 should add:
+
+- review-state reconstruction across pushes
+- meaningful baseline selection
+- check / thread / blocker transition tracking
+- merge-readiness clarity
+- resume-after-interruption clarity
+
+The future product shape is:
+
+- Act I: Doghouse reconstructs the sortie
+- Act II: Draft Punks adjudicates the notes
+- Act III: Draft Punks conducts the reply / resolve / merge ritual
+
+## Documents
+
+- [Flight Recorder Brief](./flight-recorder-brief.md)
+  Product brief, hills, non-goals, object model, and success criteria.
+- [Playbacks](./playbacks.md)
+  Concrete situations Doghouse 2.0 must handle well.
+
+## Current Stance
+
+- Do not build generic GitHub analytics mush.
+- Do not lose the PhiedBach / BunBun flavor.
+- Do not force the worksheet model to carry every kind of PR-state burden.
+- Build the recorder mechanic first, then re-layer the theater on top of it.

@@ -4,6 +4,11 @@
 
 This GitHub workflow collects every CodeRabbit review comment into a Markdown worksheet, guides you through accepting or rejecting each note, and blocks pushes until every decision is documented.
 
+Draft Punks is now also incubating **Doghouse 2.0**: the black box recorder that tells you
+what changed between PR review sorties, what is blocking merge now, and what should happen
+next. The worksheet remains the conductor's score; Doghouse is the recorder in the doghouse.
+See [doghouse/README.md](./doghouse/README.md).
+
 ## TL;DR
 
 - Harvest CodeRabbit review threads into a local worksheet with `{response}` placeholders.

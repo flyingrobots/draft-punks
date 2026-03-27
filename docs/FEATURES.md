@@ -35,6 +35,7 @@
 - [ ] DP-F-17 Logging & Diagnostics
 - [ ] DP-F-18 Debug LLM (dev aid)
 - [ ] DP-F-19 Image Splash (polish)
+- [ ] DP-F-21 Doghouse Flight Recorder
 
 ---
 
@@ -238,6 +239,66 @@
 ---
 
 ## DP-F-02 Main Menu — PR Selection
+
+---
+
+## DP-F-21 Doghouse Flight Recorder
+
+### DP-US-2101 Capture Sortie State
+
+#### User Story
+
+|  |  |
+|--|--|
+| **As a** | PR author |
+| **I want** | a durable local snapshot of the current review sortie |
+| **So that** | I can recover the live PR state without rereading GitHub from scratch. |
+
+- [ ] Done
+
+#### Requirements
+
+- [ ] Capture head SHA, unresolved thread set, grouped checks, review decision, merge state, and reviewer-specific gating such as CodeRabbit pause/cooldown state.
+- [ ] Write local machine-readable artifacts that can be compared later.
+- [ ] Treat human reviewer state separately from automated reviewer state.
+
+#### Acceptance Criteria
+
+- [ ] After a push, the operator can capture a fresh sortie and recover the exact current blocker set locally.
+- [ ] The artifact can be loaded later without access to terminal scrollback.
+
+#### Test Plan
+
+- [ ] Fixture-based snapshot serialization tests.
+- [ ] Adapter tests for PR state collection.
+
+### DP-US-2102 Compute Semantic Delta
+
+#### User Story
+
+|  |  |
+|--|--|
+| **As a** | PR author |
+| **I want** | a semantic delta against the last meaningful sortie |
+| **So that** | I can tell what changed and what I should do next. |
+
+- [ ] Done
+
+#### Requirements
+
+- [ ] Prefer meaningful baselines over raw "last file written" comparisons.
+- [ ] Track blocker, thread, and check transitions.
+- [ ] Emit a machine-usable next-action verdict.
+
+#### Acceptance Criteria
+
+- [ ] The tool can distinguish "wait for pending checks" from "fix unresolved threads" from "merge-ready pending approval."
+- [ ] The delta ignores raw timestamp churn and reordered arrays.
+
+#### Test Plan
+
+- [ ] State-transition fixtures.
+- [ ] Replay tests for representative PR scenarios.
 
 ### DP-US-0201 Fetch and Render PR List
 

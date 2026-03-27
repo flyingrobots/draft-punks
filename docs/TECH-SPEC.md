@@ -33,6 +33,20 @@ High‑level flow:
 5. On success: optionally reply_on_success; ask to resolve the thread; advance.
 6. On failure: show error; user can continue or return to main menu.
 
+### Near-Term Structural Evolution: Doghouse 2.0
+
+The current worksheet model is strong at adjudication, but weak at reconstructing noisy PR
+state across pushes. Draft Punks should grow a Doghouse layer that sits *before* worksheet
+generation:
+
+1. Capture a local PR snapshot (`snapshot`)
+2. Compare it against the last meaningful review episode (`delta`)
+3. Emit a machine-usable "what changed / what matters / what next" verdict
+4. Feed the worksheet / reply / resolve flows with that reconstructed state
+
+This should begin as agent-native plumbing rather than UI-first ceremony. The public Draft
+Punks surfaces can stay theatrical, but the core mechanic should be a trustworthy recorder.
+
 ### System Context (Mermaid)
 
 ```mermaid
