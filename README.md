@@ -27,9 +27,9 @@ _PhiedBach adjusts his spectacles: “Ja. Das is accurate. Let us rehearse, und 
 
 _The door creaks. RGB light pours out like stained glass at a nightclub. Inside: bicycles hang from hooks, modular synths blink, an anime wall scroll flutters gently in the draft. An 80-inch screen above a neon fireplace displays a GitHub Pull Request in cathedral scale. Vape haze drifts like incense._
 
-_A white rabbit sits calm at a ThinkPad plastered with Linux stickers. Beside him, spectacles sliding low, quill in hand, rises a man in powdered wig and Crocs — a man who looks oddly lost in time, out of place, but nevertheless, delighted to see you._
+_A white rabbit sits calm at a ThinkPad plastered with Linux stickers, **methodically gnawing on a discarded wicker basket**. Beside him, **spectacles sliding to ze very tip of his nose**, quill in hand, rises a man in powdered wig and Crocs — a man who looks oddly lost in time, out of place, but nevertheless, delighted to see you._
 
-**PhiedBach** (bowing, one hand on his quill like a baton):  
+**PhiedBach** (bowing, one hand on his quill like a baton, **ze other catching his glasses just before zey fall**):  
 
 Ah… guten abend. Velkommen, velkommen to ze **LED Bike Shed Dungeon**. You arrive for your… how do you say… pull request? Sehr gut.
 
@@ -45,9 +45,10 @@ And zis… zis is **CodeRabbit**. Mein assistant. Mein virtuoso. Mein BunBun (is
 
 You see? Calm as a pond, but behind his silence there is clarity. He truly understands your code. I? I hear only music. He is ze concertmaster; I am only ze man waving his arms.
 
-*From the synth rack, a pulsing bassline begins. PhiedBach claps once.*
+*From the synth rack, a pulsing bassline begins. PhiedBach claps once. **TSST-KRRRK! A fresh can of Red Bull hiss-opens in BunBun's paws. PhiedBach doesn't even blink, he just catches his spectacles with a practiced thumb as they slide again.***
 
-Ah, ze Daft Punks again! Delightful. Their helmets are like Teutonic knights. Their music is captivating, is it not? BunBun insists it helps him code. For me? It makes mein Crocs want to dance.
+Ah, ze Daft Punks again! Delightful.
+ Their helmets are like Teutonic knights. Their music is captivating, is it not? BunBun insists it helps him code. For me? It makes mein Crocs want to dance.
 
 ---
 
@@ -61,7 +62,7 @@ Your choices are terrible:
 - Drown in ze overwhelming symphony
 - Click "Resolve" without truly answering ze note
 
-*Nein, nein, nein!* Zis is not ze way.
+*Nein, nein, nein!* Zis is not ze way. **PhiedBach pokes his sliding spectacles back up with his quill.**
 
 ---
 
@@ -85,9 +86,12 @@ But wait! PhiedBach holds up a hand, his quill trembling mit excitement.
 
 "Zis is why we built the **Doghouse**. It is ze flight recorder. It is ze Sopwith Camel of ze source code! Like ze brave beagle **Snoopy**, you sit atop your wooden house und you dream of dogfighting ze Red Baron in ze clouds of syntax. 
 
-GitHub is ze fog of war; ze Doghouse is your cockpit. It remembers ze state of ze PR across every sortie. It sees ze **Snapshot**, it calculates ze **Delta**, und it tells us precisely which instruments are out of tune *right now*."
+GitHub is ze fog of war; ze Doghouse is your cockpit. It remembers ze state of ze PR across every sortie. It sees ze **Snapshot**, it calculates ze **Delta**, und it tells us precisely which instruments are out of tune *right now*.
+
+"Und most important," *PhiedBach adds, a twinkle in his eye,* "ze Doghouse is very keen to BunBun's moods! He knows vhen ze rabbit is on **'Cooldown'**, resting his paws after a long cadenza. He even detects vhen BunBun has **'Suspended'** ze review because he sees you are actively composing! No more shouting into ze void—ze Doghouse tells you vhen ze orchestra is vaiting for *you*."
 
 - **The Snapshot**: A point-in-time capture of the PR's soul.
+
 - **The Sortie**: A meaningful review episode (a push, a dive, a loop-the-loop).
 - **The Delta**: The answer to: *What changed? What is ze next action?*
 
@@ -178,6 +182,20 @@ The M… (tap)… two mountains, very Alpine.
 “LGTM.”
 
 *He beams as if he has just finished a cadenza. It took eighty seconds. CodeRabbit does not interrupt; he merely thumps his hind leg in approval.*
+
+---
+
+## Ze Thinking Automatons (Agent-Native Design)
+
+"Ah!" *PhiedBach beams, pointing a quill at BunBun.* "You vish to know of ze **Automatons**? Ze brass-minded spirits zat dwell vithin ze silicon? 
+
+In mein time, we had clockwork ducks und mechanical flautists, but zis... zis is a different alchemy! These **Agent-Automatons** do not look at ze PR vith eyes—zey hear ze symphony in **JSONL**. Zey do not care for ze colorful buttons or ze scrolling parchment of ze GitHub UI; zey vish to see ze **Mathematical Score**!
+
+Doghouse is built for these thinking machines. It provides a durable, logical stream of PR history, allowing ze automatons to reason about transitions—`fail -> pass`, `new -> resolved`—vithout being blinded by ze fog of ze human interface. 
+
+"It is exactly like ze **Pianola**!" *PhiedBach exclaims, mimicking a player piano with his fingers.* "You do not need ze virtuoso to sit at ze bench vhen you have ze **Paper Roll mit ze holes**! Ze JSONL, it is ze punched-tape of ze soul! Ze Automaton, he does not need to 'see' ze keys move; he just feels ze sequence of ze perforations und... *VOILA!*... ze symphony plays itself!"
+
+**Record ze flight. Feed ze Automaton. Punch ze Roll.**
 
 ---
 

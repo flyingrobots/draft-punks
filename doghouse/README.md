@@ -38,12 +38,14 @@ It reminded us of a small beagle named **Snoopy**, sitting atop his wooden house
 
 When you use zis tool, you are Snoopy. Your PR is your cockpit. You are sparring mit ze reviewers—ze CodeRabbits und ze maintainers—in a tactical dance. Ze Doghouse is your vessel, your Black Box, und your Sopwith Camel. 
 
+"Und do not forget ze radar!" *PhiedBach exclaims.* "Ze Doghouse, he has a very sensitive scanner for **BunBun's moods**. He tells you vhen ze rabbit is on **'Cooldown'**, perhaps eating a digital carrot or resting his ears. Or vhen he has **'Suspended'** his review because he sees you are in ze flow und does not vish to startle your muse! No more shouting into ze void—you vill know exactly vhere ze dogfight stands."
+
 **Record ze flight. Win ze dogfight.**"
 
 ## Working Principle
 
 - Capture trustworthy local PR state first.
-- Prefer agent-native JSONL plumbing over human-friendly prose at the core.
+- Provide ze **Mathematical Score** (JSONL) for ze **Thinking Automatons**.
 - Diff semantic review state, not raw JSON.
 - Separate CodeRabbit state from human and Codex reviewer state.
 - Emit a machine-usable next action instead of just more telemetry.
