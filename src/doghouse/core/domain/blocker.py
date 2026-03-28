@@ -9,6 +9,8 @@ class BlockerType(Enum):
     NOT_APPROVED = "not_approved"
     DIRTY_MERGE_STATE = "dirty_merge_state"
     CODERABBIT_STATE = "coderabbit_state"
+    LOCAL_UNCOMMITTED = "local_uncommitted"
+    LOCAL_UNPUSHED = "local_unpushed"
     OTHER = "other"
 
 class BlockerSeverity(Enum):
@@ -22,4 +24,5 @@ class Blocker:
     type: BlockerType
     message: str
     severity: BlockerSeverity = BlockerSeverity.BLOCKER
+    is_primary: bool = True  # If False, this is a secondary/dependent blocker
     metadata: Dict[str, Any] = field(default_factory=dict)

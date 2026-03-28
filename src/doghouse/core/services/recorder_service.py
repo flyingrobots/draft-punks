@@ -6,6 +6,8 @@ from ..ports.github_port import GitHubPort
 from ..ports.storage_port import StoragePort
 from .delta_engine import DeltaEngine
 
+from ..adapters.git.git_adapter import GitAdapter
+
 class RecorderService:
     """Orchestrator for capturing PR state and generating deltas."""
     
@@ -13,17 +15,24 @@ class RecorderService:
         self, 
         github: GitHubPort, 
         storage: StoragePort,
-        delta_engine: DeltaEngine
+        delta_engine: DeltaEngine,
+        git: Optional[GitAdapter] = None
     ):
         self.github = github
         self.storage = storage
         self.delta_engine = delta_engine
+        self.git = git or GitAdapter()
 
     def record_sortie(self, repo: str, pr_id: int) -> Tuple[Snapshot, Delta]:
         """Capture the current state of a PR and compute the delta against the last snapshot."""
         # 1. Capture current state
         head_sha = self.github.get_head_sha(pr_id)
-        blockers = self.github.fetch_blockers(pr_id)
+        
+        # Merge remote and local blockers
+        remote_blockers = self.github.fetch_blockers(pr_id)
+        local_blockers = self.git.get_local_blockers()
+        
+        blockers = remote_blockers + local_blockers
         metadata = self.github.get_pr_metadata(pr_id)
         
         current_snapshot = Snapshot(

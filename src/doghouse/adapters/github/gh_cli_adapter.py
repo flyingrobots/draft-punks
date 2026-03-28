@@ -139,13 +139,35 @@ class GhCliAdapter(GitHubPort):
             ))
             
         # 5. Mergeable state
+        has_conflict = False
         if data.get("mergeable") == "CONFLICTING":
+            has_conflict = True
             blockers.append(Blocker(
                 id="merge-conflict",
                 type=BlockerType.DIRTY_MERGE_STATE,
                 message="Merge conflict detected",
-                severity=BlockerSeverity.BLOCKER
+                severity=BlockerSeverity.BLOCKER,
+                is_primary=True
             ))
+            
+        # 6. Apply Blocking Matrix: If we have a conflict, other things might be secondary
+        if has_conflict:
+            # Re-process blockers to demote non-conflict blockers
+            final_blockers = []
+            for b in blockers:
+                if b.id == "merge-conflict":
+                    final_blockers.append(b)
+                else:
+                    # Demote to secondary if it's a check or review thing that might be stale due to conflict
+                    final_blockers.append(Blocker(
+                        id=b.id,
+                        type=b.type,
+                        message=b.message,
+                        severity=b.severity,
+                        is_primary=False,
+                        metadata=b.metadata
+                    ))
+            return final_blockers
             
         return blockers
 
