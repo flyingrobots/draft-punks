@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List, Set, Optional
-from .blocker import Blocker, BlockerType
+from .blocker import Blocker, BlockerType, BlockerSeverity
 from .snapshot import Snapshot
 
 @dataclass(frozen=True)
@@ -12,7 +12,7 @@ class Delta:
     added_blockers: List[Blocker] = field(default_factory=list)
     removed_blockers: List[Blocker] = field(default_factory=list)
     still_open_blockers: List[Blocker] = field(default_factory=list)
-    
+
     @property
     def head_changed(self) -> bool:
         return self.baseline_sha != self.current_sha
@@ -28,23 +28,32 @@ class Delta:
     @property
     def verdict(self) -> str:
         """The 'next action' verdict derived from the delta."""
-        if not self.still_open_blockers and not self.added_blockers:
+        all_current = self.added_blockers + self.still_open_blockers
+        if not all_current:
             return "Merge ready! All blockers resolved. 🎉"
-        
+
+        # Priority 0: Primary Blockers (e.g. Merge Conflicts)
+        primary = [b for b in all_current if b.is_primary and b.severity == BlockerSeverity.BLOCKER]
+        if primary:
+            # If multiple primary, focus on the first one or summarized
+            if any(b.type == BlockerType.DIRTY_MERGE_STATE for b in primary):
+                return "Resolve merge conflicts first! ⚔️"
+            return f"Fix primary blockers: {len(primary)} items. 🛑"
+
         # Priority 1: Failing checks
-        failing = [b for b in (self.added_blockers + self.still_open_blockers) if b.type == BlockerType.FAILING_CHECK]
+        failing = [b for b in all_current if b.type == BlockerType.FAILING_CHECK]
         if failing:
             return f"Fix failing checks: {len(failing)} remaining. 🛑"
-            
+
         # Priority 2: Unresolved threads
-        threads = [b for b in (self.added_blockers + self.still_open_blockers) if b.type == BlockerType.UNRESOLVED_THREAD]
+        threads = [b for b in all_current if b.type == BlockerType.UNRESOLVED_THREAD]
         if threads:
             return f"Address review feedback: {len(threads)} unresolved threads. 💬"
-            
+
         # Priority 3: Pending checks
-        pending = [b for b in (self.added_blockers + self.still_open_blockers) if b.type == BlockerType.PENDING_CHECK]
+        pending = [b for b in all_current if b.type == BlockerType.PENDING_CHECK]
         if pending:
             return "Wait for CI to complete. ⏳"
-            
+
         # Default: general blockers
-        return f"Resolve remaining blockers: {len(self.added_blockers) + len(self.still_open_blockers)} items. 🚧"
+        return f"Resolve remaining blockers: {len(all_current)} items. 🚧"

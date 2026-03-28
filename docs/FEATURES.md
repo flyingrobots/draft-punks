@@ -2,7 +2,7 @@
 
 ## Conventions
 
-- Feature IDs: `DP-F-XX` (two digits); 
+- Feature IDs: `DP-F-XX` (two digits);
 - Stories `DP-US-XXXX` (four digits).
 
 ## Each story lists
@@ -35,6 +35,7 @@
 - [ ] DP-F-17 Logging & Diagnostics
 - [ ] DP-F-18 Debug LLM (dev aid)
 - [ ] DP-F-19 Image Splash (polish)
+- [ ] DP-F-20 Modularization & Packaging (Monorepo, Multi‑Package)
 - [ ] DP-F-21 Doghouse Flight Recorder
 
 ---
@@ -60,17 +61,17 @@
 
 #### Requirements
 
-- [ ] Accepts items: 
-- [ ] Sequence[T]; 
-- [ ] item renderer: 
-- [ ] (T)->Widget; 
-- [ ] title str; 
+- [ ] Accepts items:
+- [ ] Sequence[T];
+- [ ] item renderer:
+- [ ] (T)->Widget;
+- [ ] title str;
 - [ ] actions hint str.
-- [ ] Up/Down move selection; 
-- [ ] Home/End jump; 
-- [ ] PgUp/PgDn paginate; 
+- [ ] Up/Down move selection;
+- [ ] Home/End jump;
+- [ ] PgUp/PgDn paginate;
 - [ ] Enter selects item.
-- [ ] Footer range reflects visible indices; 
+- [ ] Footer range reflects visible indices;
 - [ ] windowing handles long lists without perf issues.
 - [ ] No child mounting during compose (populate in on_mount/on_show).
 
@@ -82,8 +83,8 @@
 
 #### DoR
 
-- [ ] API and lifecycle documented; 
-- [ ] perf target: 
+- [ ] API and lifecycle documented;
+- [ ] perf target:
 - [ ] 5k items < 50ms first paint.
 
 #### Test Plan
@@ -106,23 +107,23 @@
 
 #### Requirements
 
-- [ ] Renderer called only for visible items; 
-- [ ] recycled when off-screen; 
+- [ ] Renderer called only for visible items;
+- [ ] recycled when off-screen;
 - [ ] supports per-item key hooks.
 
 #### Acceptance Criteria
 
-- [ ] Rendering remains smooth for 1k items; 
+- [ ] Rendering remains smooth for 1k items;
 - [ ] key hooks fire for the focused item.
 
 #### DoR
 
-- [ ] Hook interface; 
+- [ ] Hook interface;
 - [ ] event bubbling documented.
 
 #### Test Plan
 
-- [ ] Fake renderer counting calls; 
+- [ ] Fake renderer counting calls;
 - [ ] key-hook assertion.
 
 ### DP-US-0003 Empty/Error States
@@ -178,18 +179,18 @@
 
 #### Requirements
 
-- [ ] Centered ASCII logo; 
-- [ ] repo path; 
-- [ ] remote URL; 
-- [ ] branch; 
-- [ ] dirty/clean status; 
+- [ ] Centered ASCII logo;
+- [ ] repo path;
+- [ ] remote URL;
+- [ ] branch;
+- [ ] dirty/clean status;
 - [ ] `[Enter] Continue  [Esc] Quit`.
 
 #### Acceptance Criteria
 
-- [ ] In a repo with dirty working tree, show 🚧; 
+- [ ] In a repo with dirty working tree, show 🚧;
 - [ ] outside a repo, show `unknown` placeholders;
-- [ ] Enter→Main Menu; 
+- [ ] Enter→Main Menu;
 - [ ] Esc/Ctrl+C exit 0.
 
 #### DoR
@@ -198,7 +199,7 @@
 
 #### Test Plan
 
-- [ ] Unit for git helpers (fake subprocess); 
+- [ ] Unit for git helpers (fake subprocess);
 - [ ] TUI snapshot with/without git.
 
 ### DP-US-0102 Logo Overrides
@@ -225,7 +226,7 @@
 
 #### Requirements
 
-- [ ] DP_TUI_ASCII and DP_TUI_ASCII_FILE override the banner; 
+- [ ] DP_TUI_ASCII and DP_TUI_ASCII_FILE override the banner;
 - [ ] invalid file falls back to default.
 
 #### Acceptance Criteria
@@ -315,32 +316,32 @@
 
 #### Requirements
 
-- [ ] Use GitHub Port to fetch open PRs; 
-- [ ] render per SPEC: 
-  - [ ] icon (✅🟡🛑🚫), 
-  - [ ] number, 
-  - [ ] `{ i, e }`, 
-  - [ ] branch, 
-  - [ ] author, 
-  - [ ] age, 
+- [ ] Use GitHub Port to fetch open PRs;
+- [ ] render per SPEC:
+  - [ ] icon (✅🟡🛑🚫),
+  - [ ] number,
+  - [ ] `{ i, e }`,
+  - [ ] branch,
+  - [ ] author,
+  - [ ] age,
   - [ ] truncated title (≤50 chars with `[…]`).
 
 #### Acceptance Criteria
 
-- [ ] Visuals match SPEC examples; 
+- [ ] Visuals match SPEC examples;
 - [ ] Enter on a PR navigates to PR View.
 
 #### DoR
 
-- [ ] Adapter returns head branch, 
-- [ ] author login, 
-- [ ] CI state, 
+- [ ] Adapter returns head branch,
+- [ ] author login,
+- [ ] CI state,
 - [ ] issue/error counts or `None`.
 
 #### Test Plan
 
-- [ ] Fake adapter; 
-- [ ] snapshot of three PRs; 
+- [ ] Fake adapter;
+- [ ] snapshot of three PRs;
 - [ ] age humanizer unit tests.
 
 ### DP-US-0202 PR Info Modal
@@ -367,17 +368,17 @@
 
 #### Requirements
 
-- [ ] `Space` shows full PR metadata incl. description/body; 
+- [ ] `Space` shows full PR metadata incl. description/body;
 - [ ] close returns to list.
 
 #### Acceptance Criteria
 
-- [ ] Modal scrolls; 
+- [ ] Modal scrolls;
 - [ ] focus restoration on close.
 
 #### Test Plan
 
-- [ ] Modal open/close; 
+- [ ] Modal open/close;
 - [ ] focus.
 
 ### DP-US-0203 Dirty Repo Banner & Stash Flow
@@ -404,17 +405,17 @@
 
 #### Requirements
 
-- [ ] If dirty, show banner and `S` to stash; 
+- [ ] If dirty, show banner and `S` to stash;
 - [ ] flow: confirm → run git stash (or discard) → refresh list.
 
 #### Acceptance Criteria
 
-- [ ] After stash, banner disappears; 
+- [ ] After stash, banner disappears;
 - [ ] errors surfaced.
 
 #### Test Plan
 
-- [ ] Fake git runner; 
+- [ ] Fake git runner;
 - [ ] error path.
 
 ### DP-US-0204 Settings Shortcut
@@ -441,7 +442,7 @@
 
 #### Requirements
 
-- [ ] `s` opens settings screen; 
+- [ ] `s` opens settings screen;
 - [ ] saving persists and returns to list.
 
 #### Acceptance Criteria
@@ -476,17 +477,17 @@
 
 #### Requirements
 
-- [ ] `m` triggers merge flow if mergeable; 
+- [ ] `m` triggers merge flow if mergeable;
 - [ ] guardrails per DP-F-12.
 
 #### Acceptance Criteria
 
-- [ ] Non-mergeable shows reason; 
+- [ ] Non-mergeable shows reason;
 - [ ] merge path succeeds via adapter.
 
 #### Test Plan
 
-- [ ] Fake merge adapter; 
+- [ ] Fake merge adapter;
 - [ ] UI transitions.
 
 ---
@@ -517,8 +518,8 @@
 
 #### Requirements
 
-- [ ] Header with PR number/title/branches/author/status; list threads with path; 
-- [ ] unresolved count per file; 
+- [ ] Header with PR number/title/branches/author/status; list threads with path;
+- [ ] unresolved count per file;
 - [ ] filter `u` unresolved-only / `a` all.
 
 #### Acceptance Criteria
@@ -527,7 +528,7 @@
 
 #### Test Plan
 
-- [ ] Fake threads; 
+- [ ] Fake threads;
 - [ ] filter logic.
 
 ### DP-US-0302 Toggle Resolved
@@ -558,7 +559,7 @@
 
 #### Acceptance Criteria
 
-- [ ] UI updates; 
+- [ ] UI updates;
 - [ ] adapter resolve/unresolve call succeeds.
 
 #### Test Plan
@@ -589,7 +590,7 @@
 
 #### Requirements
 
-- [ ] `A` starts automation mode across unresolved; progress bar; 
+- [ ] `A` starts automation mode across unresolved; progress bar;
 - [ ] `Space` pauses to manual.
 
 #### Acceptance Criteria
@@ -598,7 +599,7 @@
 
 #### Test Plan
 
-- [ ] Fake LLM + step runner; 
+- [ ] Fake LLM + step runner;
 - [ ] pause/resume.
 
 ## DP-F-04 Comment View — Thread Traversal
@@ -627,19 +628,19 @@
 
 #### Requirements
 
-- [ ] Show body (first line preview + full text panel), per-file and overall counters; 
-- [ ] Left/Right prev/next; 
+- [ ] Show body (first line preview + full text panel), per-file and overall counters;
+- [ ] Left/Right prev/next;
 - [ ] Enter opens LLM Interaction.
 
 #### Acceptance Criteria
 
-- [ ] Counters correct; 
-- [ ] traversal wraps within bounds; 
+- [ ] Counters correct;
+- [ ] traversal wraps within bounds;
 - [ ] Enter proceeds.
 
 #### Test Plan
 
-- [ ] Index math tests; 
+- [ ] Index math tests;
 - [ ] counter formatting.
 
 ### DP-US-0402 Context Blocks
@@ -702,20 +703,20 @@
 
 #### Requirements
 
-- [ ] Confirm modal; 
-- [ ] option to edit prompt; 
-- [ ] send; 
+- [ ] Confirm modal;
+- [ ] option to edit prompt;
+- [ ] send;
 - [ ] parse JSON tolerant to ```json fences.
-- [ ] Success branch: “`LLM success is true. Mark as resolved? [Yes][No]`” → 
-- [ ] call resolve when Yes → 
+- [ ] Success branch: “`LLM success is true. Mark as resolved? [Yes][No]`” →
+- [ ] call resolve when Yes →
 - [ ] auto-advance to next comment.
-- [ ] Failure branch: “`LLM had an error: <err>. Continue? [Yes][No]`” → 
-- [ ] Yes advances (unresolved); 
+- [ ] Failure branch: “`LLM had an error: <err>. Continue? [Yes][No]`” →
+- [ ] Yes advances (unresolved);
 - [ ] No returns to Main Menu.
 
 #### Acceptance Criteria
 
-- [ ] Branching matches; 
+- [ ] Branching matches;
 - [ ] adapter resolve called with thread id.
 
 #### Test Plan
@@ -747,14 +748,14 @@
 
 #### Requirements
 
-- [ ] Auto send remaining (file/PR scope); 
-- [ ] `Space` pauses; 
+- [ ] Auto send remaining (file/PR scope);
+- [ ] `Space` pauses;
 - [ ] progress bar;
 - [ ] summary list of commits.
 
 #### Acceptance Criteria
 
-- [ ] Pause toggles; 
+- [ ] Pause toggles;
 - [ ] summary lists SHAs.
 
 #### Test Plan
@@ -793,7 +794,7 @@
 
 #### Test Plan
 
-- [ ] Editor harness stub; 
+- [ ] Editor harness stub;
 - [ ] content compare.
 
 ---
@@ -824,12 +825,12 @@
 
 #### Requirements
 
-- [ ] Modal lists `Codex/Claude/Gemini/Debug/Other`; 
+- [ ] Modal lists `Codex/Claude/Gemini/Debug/Other`;
 - [ ] persisted per repo under `~/.draft-punks/<repo>/config.json`.
 
 #### Acceptance Criteria
 
-- [ ] Setting survives restart; 
+- [ ] Setting survives restart;
 - [ ] reflected in command builder.
 
 #### Test Plan
@@ -864,7 +865,7 @@
 
 #### Acceptance Criteria
 
-- [ ] Builder substitutes token; 
+- [ ] Builder substitutes token;
 - [ ] shell-escapes args.
 
 #### Test Plan
@@ -899,12 +900,12 @@
 
 #### Acceptance Criteria
 
-- [ ] reply_on_success posts reply; 
+- [ ] reply_on_success posts reply;
 - [ ] force_json adds provider-appropriate flag.
 
 #### Test Plan
 
-- [ ] Mutation call; 
+- [ ] Mutation call;
 - [ ] argv inspection.
 
 ---
@@ -935,8 +936,8 @@
 
 #### Requirements
 
-- [ ] Use token HTTP GraphQL if `GH_TOKEN`/`GITHUB_TOKEN` present; 
-- [ ] else fall back to gh CLI; 
+- [ ] Use token HTTP GraphQL if `GH_TOKEN`/`GITHUB_TOKEN` present;
+- [ ] else fall back to gh CLI;
 - [ ] consistent objects.
 
 #### Acceptance Criteria
@@ -945,7 +946,7 @@
 
 #### Test Plan
 
-- [ ] Recorded fixtures; 
+- [ ] Recorded fixtures;
 - [ ] CLI runner stub.
 
 ### DP-US-0702 Threads/Reply/Resolve
@@ -972,18 +973,18 @@
 
 #### Requirements
 
-- [ ] Iterate review threads; 
-- [ ] post replies with body; 
+- [ ] Iterate review threads;
+- [ ] post replies with body;
 - [ ] resolve threads.
 
 #### Acceptance Criteria
 
-- [ ] Mutations succeed; 
+- [ ] Mutations succeed;
 - [ ] error surfaces.
 
 #### Test Plan
 
-- [ ] GraphQL tests; 
+- [ ] GraphQL tests;
 - [ ] error handling.
 
 ### DP-US-0703 Rate Limit & Paging
@@ -1010,8 +1011,8 @@
 
 #### Requirements
 
-- [ ] Page through >100 threads; 
-- [ ] honor API rate limits; 
+- [ ] Page through >100 threads;
+- [ ] honor API rate limits;
 - [ ] show progress callback.
 
 #### Test Plan
@@ -1050,7 +1051,7 @@
 
 #### Acceptance Criteria
 
-- [ ] Reply content includes SHA and attribution; 
+- [ ] Reply content includes SHA and attribution;
 - [ ] errors logged but non-fatal.
 
 #### Test Plan
@@ -1119,10 +1120,10 @@
 
 #### Requirements
 
-- [ ] Start from PR View; 
-- [ ] mode selection; 
-- [ ] progress bar; 
-- [ ] pause; 
+- [ ] Start from PR View;
+- [ ] mode selection;
+- [ ] progress bar;
+- [ ] pause;
 - [ ] summary.
 
 #### Test Plan
@@ -1157,12 +1158,12 @@
 
 #### Requirements
 
-- [ ] External editor integration; 
+- [ ] External editor integration;
 - [ ] support tokens: {file_path},{lines},{author}.
 
 #### Test Plan
 
-- [ ] Token substitution tests; 
+- [ ] Token substitution tests;
 - [ ] golden prompt snapshot.
 
 ---
@@ -1193,7 +1194,7 @@
 
 #### Requirements
 
-- [ ] Manage provider, reply_on_success, force_json; 
+- [ ] Manage provider, reply_on_success, force_json;
 - [ ] save per repo.
 
 #### Test Plan
@@ -1228,15 +1229,15 @@
 
 #### Requirements
 
-- [ ] CI green; 
-- [ ] approvals met; 
-- [ ] fast-forward preference; 
-- [ ] confirmation modal; 
+- [ ] CI green;
+- [ ] approvals met;
+- [ ] fast-forward preference;
+- [ ] confirmation modal;
 - [ ] gh CLI path.
 
 #### Test Plan
 
-- [ ] Fake adapter; 
+- [ ] Fake adapter;
 - [ ] error handling.
 
 ---
@@ -1267,8 +1268,8 @@
 
 #### Requirements
 
-- [ ] Detect dirty; `S` to stash; 
-- [ ] confirm; 
+- [ ] Detect dirty; `S` to stash;
+- [ ] confirm;
 - [ ] show result.
 
 #### Test Plan
@@ -1303,13 +1304,13 @@
 
 #### Requirements
 
-- [ ] Esc/Ctrl+C quit anywhere; 
-- [ ] Left/Right prev/next at Comment View; 
+- [ ] Esc/Ctrl+C quit anywhere;
+- [ ] Left/Right prev/next at Comment View;
 - [ ] help overlay key.
 
 #### Test Plan
 
-- [ ] Keybinding tests; 
+- [ ] Keybinding tests;
 - [ ] overlay snapshot.
 
 ---
@@ -1374,7 +1375,7 @@
 
 #### Requirements
 
-- [ ] Dark/light palettes; 
+- [ ] Dark/light palettes;
 - [ ] minimum contrast; centered title.
 
 #### Test Plan
@@ -1409,7 +1410,7 @@
 
 #### Requirements
 
-- [ ] Log info/warn/error; 
+- [ ] Log info/warn/error;
 - [ ] capture raw non‑JSON output in a fenced block.
 
 #### Test Plan
@@ -1444,10 +1445,10 @@
 
 #### Requirements
 
-- [ ] Show prompt; 
-- [ ] options to Emit success / Simulate failure; 
-- [ ] use HEAD sha when emitting success; 
-- [ ] ask Resolve? after success; 
+- [ ] Show prompt;
+- [ ] options to Emit success / Simulate failure;
+- [ ] use HEAD sha when emitting success;
+- [ ] ask Resolve? after success;
 - [ ] Continue? after failure.
 
 #### Test Plan
@@ -1482,12 +1483,12 @@
 
 #### Requirements
 
-- [ ] When DP_TUI_IMAGE is set to a valid path, render image on splash; 
+- [ ] When DP_TUI_IMAGE is set to a valid path, render image on splash;
 - [ ] fallback to ASCII.
 
 #### Test Plan
 
-- [ ] Feature flag test; 
+- [ ] Feature flag test;
 - [ ] rendering smoke test.
 
 ---
@@ -1518,7 +1519,7 @@
 
 ### Description
 
-Restructure repo into packages: 
+Restructure repo into packages:
 
 - `draft-punks-core`
 - `draft-punks-llm`
@@ -1539,15 +1540,15 @@ Restructure repo into packages:
 - [ ] `pipx install draft-punks-cli` installs a working CLI.
 - [ ] In dev, `make dev-venv && draft-punks-dev tui` launches TUI across packages.
 - [ ] DoR:
-- [ ] Package boundaries decided; 
+- [ ] Package boundaries decided;
 - [ ] mapping doc from old modules to new packages.
-- [ ] Tooling choice (hatch/uv/poetry) agreed; 
+- [ ] Tooling choice (hatch/uv/poetry) agreed;
 - [ ] Makefile updated.
 
 #### Test Plan
 
-- [ ] Smoke tests for CLI/TUI packages; 
-- [ ] import tests for shim modules; 
+- [ ] Smoke tests for CLI/TUI packages;
+- [ ] import tests for shim modules;
 - [ ] CI matrix builds per package.
 
 ### DP-US-2002 Compatibility shims & metapackage
@@ -1574,17 +1575,17 @@ Restructure repo into packages:
 
 #### Requirements
 
-- [ ] Provide `draft_punks` top‑level shim that re‑exports from new packages; 
+- [ ] Provide `draft_punks` top‑level shim that re‑exports from new packages;
 - [ ] add a metapackage `draft-punks` that depends on the split packages.
 
 #### Acceptance Criteria
 
-- [ ] Existing scripts/imports still run; 
+- [ ] Existing scripts/imports still run;
 - [ ] deprecation notices logged.
 
 #### Test Plan
 
-- [ ] Import path tests; 
+- [ ] Import path tests;
 - [ ] runtime warn capture.
 
 ### DP-US-2003 Packaging CI
@@ -1611,10 +1612,10 @@ Restructure repo into packages:
 
 #### Requirements
 
-- [ ] Add build/test workflows to build wheels/sdists for each package; 
+- [ ] Add build/test workflows to build wheels/sdists for each package;
 - [ ] ensure `pipx install` smoke.
 
 #### Test Plan
 
-- [ ] CI green across Python 3.11/3.12/3.14; 
+- [ ] CI green across Python 3.11/3.12/3.14;
 - [ ] artifact checks.

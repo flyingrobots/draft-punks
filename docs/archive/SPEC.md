@@ -30,7 +30,7 @@ Displaying [{range}] of {total}
 {item actions}
 ```
 
-The scroll view is a custom generic widget that can be used to display lists of items that the user should pick from. 
+The scroll view is a custom generic widget that can be used to display lists of items that the user should pick from.
 
 The scroll view displays as many items in the list as it can at once. Items in the scroll view are pickable. The user can press up or down arrow to pick and scroll. Items can have their own key bindings.
 
@@ -57,7 +57,7 @@ graph TD
     A[Title Screen] -->|Enter| B[Main Menu]
     A -->|Esc| Z1[Quit App]
     A -->|Ctrl+C| Z1
-    
+
     style A fill:#2d3748,stroke:#4a5568,stroke-width:2px
     style B fill:#2b6cb0,stroke:#3182ce,stroke-width:2px
     style Z1 fill:#742a2a,stroke:#9b2c2c,stroke-width:2px
@@ -136,13 +136,13 @@ graph TD
     A -->|s| SET[Settings]
     A -->|Esc| Z[Quit App]
     A -->|Ctrl+C| Z
-    
+
     I -->|Close| A
     M -->|Complete| A
     ST -->|Complete| A
     SET -->|Save/Cancel| A
     A1 --> A
-    
+
     style A fill:#2b6cb0,stroke:#3182ce,stroke-width:2px
     style B fill:#2c5282,stroke:#2b6cb0,stroke-width:2px
     style Z fill:#742a2a,stroke:#9b2c2c,stroke-width:2px
@@ -198,7 +198,7 @@ Represents an open PR and displays information about its current state:
 
 `{icon}` is one of the following:
 
-- `✅` if CI/CD is error-free, there are no unresolved issues, and the user can merge it 
+- `✅` if CI/CD is error-free, there are no unresolved issues, and the user can merge it
 - `🟡` if there are unresolved issues
 - `🛑` if there are CI/CD errors
 - `🚫` if the user cannot merge this branch and none of the above apply
@@ -238,7 +238,7 @@ It should be formatted:
 
 ##### Title
 
-`{title}` is the PR title. 
+`{title}` is the PR title.
 
 **NOTE:** if longer than 50 characters, truncate by replacing from character 48+ with `[…]` so that it is at most 50 characters long.
 
@@ -273,11 +273,11 @@ If there are 3 open PRs, it might look like (the first one is selected):
     ░ 👤 someone ⏳ yesterday
     ░ Finally! We're fixing this bug
 
-Displaying [1-3] of 3 
+Displaying [1-3] of 3
 
 ↑, ↓ pick
-[Enter] select 
-[Space] info 
+[Enter] select
+[Space] info
 [m] merge
 [Esc] back
 ```
@@ -299,7 +299,7 @@ For example: if only 3 fit on-screen, but there are 12 total, it might look like
     █ 👤 flyingrobots ⏳ 3 weeks ago
     █ Add box to thing
 
-Displaying [7-9] of 12 
+Displaying [7-9] of 12
 
 ↑, ↓ pick
 [Enter] select
@@ -335,17 +335,17 @@ graph TD
     A -->|A| AUTO[Automate All<br/>Unresolved Comments]
     A -->|Esc| Z[Quit App]
     A -->|Ctrl+C| Z
-    
+
     A1 --> A
     R --> A
     U --> A
     ALL --> A
     AUTO --> LLM[LLM View<br/>Auto Mode]
-    
+
     LLM -->|Space| PAUSE[Pause Automation]
     PAUSE --> LLM2[LLM View<br/>Manual Mode]
     LLM -->|Complete All| A
-    
+
     style A fill:#2c5282,stroke:#2b6cb0,stroke-width:2px
     style B fill:#2c5282,stroke:#2b6cb0,stroke-width:2px
     style Z fill:#742a2a,stroke:#9b2c2c,stroke-width:2px
@@ -477,13 +477,13 @@ graph TD
     A -->|p| PREV[Jump to Previous Thread]
     A -->|Esc| Z[Quit App]
     A -->|Ctrl+C| Z
-    
+
     NAV --> A
     R --> A
     U --> A
     NEXT --> A2[Next Thread Comment View]
     PREV --> A3[Previous Thread Comment View]
-    
+
     style A fill:#2c5282,stroke:#2b6cb0,stroke-width:2px
     style B fill:#38a169,stroke:#48bb78,stroke-width:2px
     style Z fill:#742a2a,stroke:#9b2c2c,stroke-width:2px
@@ -617,29 +617,29 @@ graph TD
     A -->|b| BACK
     A -->|Esc| Z[Quit App]
     A -->|Ctrl+C| Z
-    
+
     EDIT --> B
     FILE --> AUTO[Automation Mode]
     SETTINGS --> A
-    
+
     B -->|Response Complete| RESP[Show Response]
-    
+
     RESP -->|c| CLIP[Copy to Clipboard]
     RESP -->|s| SAVE[Save Response]
     RESP -->|a| APPLY[Apply Changes]
     RESP -->|r| RETRY[Retry/Edit Prompt]
     RESP -->|Esc| Z
     RESP -->|Ctrl+C| Z
-    
+
     CLIP --> RESP
     SAVE --> RESP
     APPLY --> BACK
     RETRY --> B
-    
+
     AUTO -->|Space| PAUSE[Pause Automation]
     AUTO -->|Complete| DONE[Return to PR View]
     PAUSE --> RESP
-    
+
     style A fill:#38a169,stroke:#48bb78,stroke-width:2px
     style B fill:#2f855a,stroke:#38a169,stroke-width:2px
     style RESP fill:#38a169,stroke:#48bb78,stroke-width:2px

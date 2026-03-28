@@ -7,13 +7,13 @@ from ...core.domain.snapshot import Snapshot
 
 class JSONLStorageAdapter(StoragePort):
     """Adapter for persisting snapshots using JSONL files."""
-    
+
     def __init__(self, storage_root: Optional[str] = None):
         if storage_root:
             self.root = Path(storage_root)
         else:
             self.root = Path.home() / ".doghouse" / "snapshots"
-        
+
         self.root.mkdir(parents=True, exist_ok=True)
 
     def _get_path(self, repo: str, pr_id: int) -> Path:
@@ -32,7 +32,7 @@ class JSONLStorageAdapter(StoragePort):
         path = self._get_path(repo, pr_id)
         if not path.exists():
             return []
-            
+
         snapshots = []
         with open(path, "r") as f:
             for line in f:

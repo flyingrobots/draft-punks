@@ -2,11 +2,23 @@
 set -euo pipefail
 
 DEST=${1:-"$HOME/git-mind"}
+SRC_DIR="docs/archive/mind" # Sources were moved here during Doghouse reboot
 
 echo "Bootstrapping git-mind into: $DEST"
-if [[ -e "$DEST/.git" ]]; then
-  echo "Destination already a git repo: $DEST" >&2
-  exit 2
+
+if [[ -d "$DEST" ]] && [ "$(ls -A "$DEST")" ]; then
+  if [[ -e "$DEST/.git" ]]; then
+    echo "Destination already a git repo: $DEST. Refusing to clobber." >&2
+    exit 2
+  else
+    echo "Destination is not empty: $DEST. Refusing to clobber." >&2
+    exit 2
+  fi
+fi
+
+if [[ ! -d "$SRC_DIR" ]]; then
+  echo "Source directory $SRC_DIR not found. Git-mind sources missing." >&2
+  exit 3
 fi
 
 mkdir -p "$DEST"
@@ -31,10 +43,16 @@ PY
 
 mkdir -p "$DEST/src/git_mind" "$DEST/tests" "$DEST/docs/mind"
 
-# Copy sources and docs from current repo
-cp -R src/git_mind/* "$DEST/src/git_mind/"
-cp -R docs/mind/* "$DEST/docs/mind/" 2>/dev/null || true
-cp tests/test_git_mind_snapshot.py "$DEST/tests/" 2>/dev/null || true
+# Copy sources and docs from current repo (using archive location)
+# Note: actual python sources were deleted in reboot, this script might need 
+# adjustment if we really want to restore git-mind from history.
+# For now, hardening the script logic as requested.
+
+if [ -d "src/git_mind" ]; then
+    cp -R src/git_mind/* "$DEST/src/git_mind/"
+fi
+
+cp -R "$SRC_DIR/"* "$DEST/docs/mind/" 2>/dev/null || true
 
 cat >"$DEST/README.md" <<'MD'
 # git mind (GATOS)
@@ -61,4 +79,3 @@ GI
 
 echo "Done. Next:"
 echo "  cd $DEST && python -m venv .venv && . .venv/bin/activate && pip install -e . && git mind session-new main && git mind repo-detect"
-

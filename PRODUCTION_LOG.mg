@@ -57,5 +57,27 @@ Committed failing tests first, then implemented the features. Left tests in plac
 
 ### What could we have done differently
 Include a lightweight script or Makefile target that ensures a dev venv with pytest is provisioned before test steps, or run tests inside CI where the toolchain is guaranteed.
-\n## 2026-03-27: Doghouse Reboot (The Great Pivot)\n- Deleted legacy Draft Punks TUI and GATOS/git-mind kernel.\n- Pivot to DOGHOUSE: The PR Flight Recorder.\n- Implemented core Doghouse engine (Snapshot, Sortie, Delta).\n- Implemented GitHub adapter using 'gh' CLI + GraphQL for review threads.\n- Implemented CLI 'doghouse snapshot' and 'doghouse history'.\n- Verified on real PR (flyingrobots/draft-punks PR #3).\n- Added unit tests for DeltaEngine.
-\n## 2026-03-27: Soul Restored\n- Restored PhiedBach / BunBun narrative to README.md.\n- Unified Draft Punks (Conductor) and Doghouse (Recorder) vision.\n- Finalized engine for feat/doghouse-reboot.
+
+## Incident: Doghouse Reboot (The Great Pivot)
+
+Timestamp: 2026-03-27
+
+Task: DP-F-21
+
+### Problem
+Project had drifted into "GATOS" and "git-mind" concepts that strayed from the original PhiedBach vision and immediate needs.
+
+### Resolution
+Rebooted the project to focus on **DOGHOUSE**, the PR flight recorder. Deleted legacy TUI/kernel, implemented hexagonal core, and restored the original lore.
+
+## Incident: Doghouse Refinement (Ze Radar)
+
+Timestamp: 2026-03-28
+
+Task: Refinement & CodeRabbit Feedback
+
+### Problem
+The initial Doghouse cut lacked live monitoring, repro capabilities, and sensitivity to merge conflicts vs. secondary check failures.
+
+### Resolution
+Implemented `doghouse watch`, `doghouse export`, and the Blocking Matrix. Hardened adapters with timeouts and deduplication. Addressed 54 threads of feedback.

@@ -6,24 +6,25 @@ from ...core.domain.blocker import Blocker, BlockerType, BlockerSeverity
 
 class GhCliAdapter(GitHubPort):
     """Adapter for GitHub using the 'gh' CLI."""
-    
+
     def __init__(self, repo_owner: Optional[str] = None, repo_name: Optional[str] = None):
         self.repo_owner = repo_owner
         self.repo_name = repo_name
         self.repo = f"{repo_owner}/{repo_name}" if repo_owner and repo_name else None
 
-    def _run_gh(self, args: List[str]) -> str:
+    def _run_gh(self, args: List[str], with_repo: bool = True) -> str:
         """Execute a 'gh' command and return stdout."""
         cmd = ["gh"] + args
-        if self.repo:
+        if with_repo and self.repo:
             cmd += ["-R", self.repo]
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+
+        # Add 30s timeout to all gh calls
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=30)
         return result.stdout
 
-    def _run_gh_json(self, args: List[str]) -> Dict[str, Any]:
+    def _run_gh_json(self, args: List[str], with_repo: bool = True) -> Dict[str, Any]:
         """Execute a 'gh' command and return parsed JSON output."""
-        return json.loads(self._run_gh(args))
+        return json.loads(self._run_gh(args, with_repo=with_repo))
 
     def get_head_sha(self, pr_id: Optional[int] = None) -> str:
         fields = ["headRefOid"]
@@ -42,10 +43,10 @@ class GhCliAdapter(GitHubPort):
         fields = ["statusCheckRollup", "reviewDecision", "mergeable", "number"]
         data = self._run_gh_json(["pr", "view", str(pr_id) if pr_id else "", "--json", ",".join(fields)])
         actual_pr_id = data["number"]
-        
+
         blockers = []
-        
-        # 2. Fetch Unresolved threads via GraphQL (since 'gh pr view --json' lacks it)
+
+        # 2. Fetch Unresolved threads via GraphQL
         owner, name = self._fetch_repo_info()
         gql_query = """
         query($owner: String!, $repo: String!, $pr: Int!) {
@@ -67,13 +68,14 @@ class GhCliAdapter(GitHubPort):
         }
         """
         try:
+            # Note: 'gh api' does not need -R if variables are provided
             gql_res = self._run_gh_json([
-                "api", "graphql", 
-                "-F", f"owner={owner}", 
-                "-F", f"repo={name}", 
-                "-F", f"pr={actual_pr_id}", 
+                "api", "graphql",
+                "-F", f"owner={owner}",
+                "-F", f"repo={name}",
+                "-F", f"pr={actual_pr_id}",
                 "-f", f"query={gql_query}"
-            ])
+            ], with_repo=False)
             threads = gql_res.get("data", {}).get("repository", {}).get("pullRequest", {}).get("reviewThreads", {}).get("nodes", [])
             for thread in threads:
                 if not thread.get("isResolved"):
@@ -83,14 +85,13 @@ class GhCliAdapter(GitHubPort):
                         msg = first_comment.get("body", "Unresolved thread")
                         if len(msg) > 80:
                             msg = msg[:77] + "..."
-                        
+
                         blockers.append(Blocker(
                             id=f"thread-{first_comment['id']}",
                             type=BlockerType.UNRESOLVED_THREAD,
                             message=msg
                         ))
         except Exception as e:
-            # Fallback or log error
             blockers.append(Blocker(
                 id="error-threads",
                 type=BlockerType.OTHER,
@@ -100,27 +101,25 @@ class GhCliAdapter(GitHubPort):
 
         # 3. Status checks
         for check in data.get("statusCheckRollup", []):
-            # CheckRun uses 'conclusion', StatusContext uses 'state'
             state = check.get("conclusion") or check.get("state")
-            name = check.get("context") or check.get("name")
-            
+            check_name = check.get("context") or check.get("name")
+
             if state in ["FAILURE", "ERROR", "CANCELLED", "ACTION_REQUIRED"]:
                 blockers.append(Blocker(
-                    id=f"check-{name}",
+                    id=f"check-{check_name}",
                     type=BlockerType.FAILING_CHECK,
-                    message=f"Check failed: {name}",
+                    message=f"Check failed: {check_name}",
                     severity=BlockerSeverity.BLOCKER
                 ))
             elif state in ["PENDING", "IN_PROGRESS", "QUEUED", None]:
-                # If status is not COMPLETED, it's pending
                 if check.get("status") != "COMPLETED" or state in ["PENDING", "IN_PROGRESS"]:
                     blockers.append(Blocker(
-                        id=f"check-{name}",
+                        id=f"check-{check_name}",
                         type=BlockerType.PENDING_CHECK,
-                        message=f"Check pending: {name}",
+                        message=f"Check pending: {check_name}",
                         severity=BlockerSeverity.INFO
                     ))
-        
+
         # 4. Review Decision
         decision = data.get("reviewDecision")
         if decision == "CHANGES_REQUESTED":
@@ -137,7 +136,7 @@ class GhCliAdapter(GitHubPort):
                 message="Review required",
                 severity=BlockerSeverity.WARNING
             ))
-            
+
         # 5. Mergeable state
         has_conflict = False
         if data.get("mergeable") == "CONFLICTING":
@@ -149,10 +148,9 @@ class GhCliAdapter(GitHubPort):
                 severity=BlockerSeverity.BLOCKER,
                 is_primary=True
             ))
-            
-        # 6. Apply Blocking Matrix: If we have a conflict, other things might be secondary
+
+        # 6. Apply Blocking Matrix
         if has_conflict:
-            # Re-process blockers to demote non-conflict blockers
             final_blockers = []
             for b in blockers:
                 if b.id == "merge-conflict":
@@ -168,9 +166,14 @@ class GhCliAdapter(GitHubPort):
                         metadata=b.metadata
                     ))
             return final_blockers
-            
+
         return blockers
 
     def get_pr_metadata(self, pr_id: Optional[int] = None) -> Dict[str, Any]:
         fields = ["number", "title", "author", "url"]
-        return self._run_gh_json(["pr", "view", str(pr_id) if pr_id else "", "--json", ",".join(fields)])
+        data = self._run_gh_json(["pr", "view", str(pr_id) if pr_id else "", "--json", ",".join(fields)])
+        # Use provided or detected repo info
+        owner, name = self._fetch_repo_info()
+        data["repo_owner"] = owner
+        data["repo_name"] = name
+        return data

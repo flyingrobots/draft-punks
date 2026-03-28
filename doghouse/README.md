@@ -34,9 +34,9 @@ durable state reconstruction layer that tells the operator what fight they are a
 
 "You ask vhy it is called ze Doghouse? Ah, it is a tale of madness und bravery! You see, our fellow composer **Codex** was losing his mind in ze GitHub tunnels. Ze GraphQL queries, ze 'gh' CLI mess, ze endless cascading threads... it was a maddening fog! Codex felt he was fighting hallucinations.
 
-It reminded us of a small beagle named **Snoopy**, sitting atop his wooden house, dreaming he was an ace pilot in ze Great War, dogfighting ze Red Baron in ze clouds. 
+It reminded us of a small beagle named **Snoopy**, sitting atop his wooden house, dreaming he was an ace pilot in ze Great War, dogfighting ze Red Baron in ze clouds.
 
-When you use zis tool, you are Snoopy. Your PR is your cockpit. You are sparring mit ze reviewers—ze CodeRabbits und ze maintainers—in a tactical dance. Ze Doghouse is your vessel, your Black Box, und your Sopwith Camel. 
+When you use zis tool, you are Snoopy. Your PR is your cockpit. You are sparring mit ze reviewers—ze CodeRabbits und ze maintainers—in a tactical dance. Ze Doghouse is your vessel, your Black Box, und your Sopwith Camel.
 
 "Und do not forget ze radar!" *PhiedBach exclaims.* "Ze Doghouse, he has a very sensitive scanner for **BunBun's moods**. He tells you vhen ze rabbit is on **'Cooldown'**, perhaps eating a digital carrot or resting his ears. Or vhen he has **'Suspended'** his review because he sees you are in ze flow und does not vish to startle your muse! No more shouting into ze void—you vill know exactly vhere ze dogfight stands."
 

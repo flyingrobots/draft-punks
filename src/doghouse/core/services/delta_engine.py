@@ -5,7 +5,7 @@ from ..domain.delta import Delta
 
 class DeltaEngine:
     """The core engine for computing semantic deltas between snapshots."""
-    
+
     def compute_delta(self, baseline: Optional[Snapshot], current: Snapshot) -> Delta:
         """Compute the delta between a baseline snapshot and a current one."""
         if not baseline:
@@ -19,18 +19,18 @@ class DeltaEngine:
                 removed_blockers=[],
                 still_open_blockers=[]
             )
-            
+
         # Group by ID for comparison
         baseline_ids: Set[str] = {b.id for b in baseline.blockers}
         current_ids: Set[str] = {b.id for b in current.blockers}
-        
+
         baseline_map: Dict[str, Blocker] = {b.id: b for b in baseline.blockers}
         current_map: Dict[str, Blocker] = {b.id: b for b in current.blockers}
-        
-        removed_ids = baseline_ids - current_ids
-        added_ids = current_ids - baseline_ids
-        still_open_ids = baseline_ids & current_ids
-        
+
+        removed_ids = sorted(list(baseline_ids - current_ids))
+        added_ids = sorted(list(current_ids - baseline_ids))
+        still_open_ids = sorted(list(baseline_ids & current_ids))
+
         return Delta(
             baseline_timestamp=baseline.timestamp.isoformat(),
             current_timestamp=current.timestamp.isoformat(),

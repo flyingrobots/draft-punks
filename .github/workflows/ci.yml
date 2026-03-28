@@ -1,10 +1,17 @@
 name: CI
+
 on:
   push:
-    branches: [ tui ]
+    branches: [ main, feat/doghouse-reboot ]
   pull_request:
-    branches: [ tui ]
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
+
   test:
     runs-on: ubuntu-latest
     steps:

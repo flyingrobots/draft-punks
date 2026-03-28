@@ -1,6 +1,6 @@
 # 🎼🎵🎶 Draft Punks
 
-**Draft Punks** keeps sprawling CodeRabbit reviews manageable. 
+**Draft Punks** keeps sprawling CodeRabbit reviews manageable.
 
 This GitHub workflow collects every CodeRabbit review comment into a Markdown worksheet, guides you through accepting or rejecting each note, and blocks pushes until every decision is documented.
 
@@ -12,12 +12,12 @@ Draft Punks is now also incubating **Doghouse 2.0**: the black box recorder that
 
 ## 🐇 CodeRabbit’s Poem-TL;DR
 
-> I flood your PR, my notes cascade,  
-> Too many threads, the page degrades.  
-> But PhiedBach scores them, quill in hand,  
-> A worksheet formed, your decisions we demand.  
-> No push may pass till all’s reviewed,  
-> Install the flows — ten lines, you’re cued. 🐇✨. 
+> I flood your PR, my notes cascade,
+> Too many threads, the page degrades.
+> But PhiedBach scores them, quill in hand,
+> A worksheet formed, your decisions we demand.
+> No push may pass till all’s reviewed,
+> Install the flows — ten lines, you’re cued. 🐇✨.
 
 _PhiedBach adjusts his spectacles: “Ja. Das is accurate. Let us rehearse, und together your code vil become a beautiful symphony of syntax.”_
 
@@ -29,7 +29,7 @@ _The door creaks. RGB light pours out like stained glass at a nightclub. Inside:
 
 _A white rabbit sits calm at a ThinkPad plastered with Linux stickers, **methodically gnawing on a discarded wicker basket**. Beside him, **spectacles sliding to ze very tip of his nose**, quill in hand, rises a man in powdered wig and Crocs — a man who looks oddly lost in time, out of place, but nevertheless, delighted to see you._
 
-**PhiedBach** (bowing, one hand on his quill like a baton, **ze other catching his glasses just before zey fall**):  
+**PhiedBach** (bowing, one hand on his quill like a baton, **ze other catching his glasses just before zey fall**):
 
 Ah… guten abend. Velkommen, velkommen to ze **LED Bike Shed Dungeon**. You arrive for your… how do you say… pull request? Sehr gut.
 
@@ -41,7 +41,7 @@ And zis… zis is **CodeRabbit**. Mein assistant. Mein virtuoso. Mein BunBun (is
 
 *BunBun's ears twitch. He does not look up. His paws tap a key, and the PR on the giant screen ripples red, then green.*
 
-**PhiedBach** (delighted):  
+**PhiedBach** (delighted):
 
 You see? Calm as a pond, but behind his silence there is clarity. He truly understands your code. I? I hear only music. He is ze concertmaster; I am only ze man waving his arms.
 
@@ -78,13 +78,13 @@ A pre-push hook enforces the ritual. No unresolved placeholders may pass into th
 
 ## 🐕 NEW: Ze Doghouse (Recorder 2.0)
 
-But wait! PhiedBach holds up a hand, his quill trembling mit excitement. 
+But wait! PhiedBach holds up a hand, his quill trembling mit excitement.
 
 "Sometimes," *he whispers,* "the symphony goes on for many days. You push a fix, BunBun sings a new verse, the CI checks crash like cymbals... and you lose ze thread! You forget where you were! You feel... how do you say... *hallucinations* in ze GitHub tunnels!"
 
 *He taps a heavy, brass-bound box on his desk—The Doghouse.*
 
-"Zis is why we built the **Doghouse**. It is ze flight recorder. It is ze Sopwith Camel of ze source code! Like ze brave beagle **Snoopy**, you sit atop your wooden house und you dream of dogfighting ze Red Baron in ze clouds of syntax. 
+"Zis is why we built the **Doghouse**. It is ze flight recorder. It is ze Sopwith Camel of ze source code! Like ze brave beagle **Snoopy**, you sit atop your wooden house und you dream of dogfighting ze Red Baron in ze clouds of syntax.
 
 GitHub is ze fog of war; ze Doghouse is your cockpit. It remembers ze state of ze PR across every sortie. It sees ze **Snapshot**, it calculates ze **Delta**, und it tells us precisely which instruments are out of tune *right now*.
 
@@ -115,7 +115,7 @@ jobs:
 ```
 
 ```yaml
-# .github/workflows/draft-punks-apply.yml  
+# .github/workflows/draft-punks-apply.yml
 name: Apply Feedback
 on:
   push:
@@ -187,11 +187,11 @@ The M… (tap)… two mountains, very Alpine.
 
 ## Ze Thinking Automatons (Agent-Native Design)
 
-"Ah!" *PhiedBach beams, pointing a quill at BunBun.* "You vish to know of ze **Automatons**? Ze brass-minded spirits zat dwell vithin ze silicon? 
+"Ah!" *PhiedBach beams, pointing a quill at BunBun.* "You vish to know of ze **Automatons**? Ze brass-minded spirits zat dwell vithin ze silicon?
 
 In mein time, we had clockwork ducks und mechanical flautists, but zis... zis is a different alchemy! These **Agent-Automatons** do not look at ze PR vith eyes—zey hear ze symphony in **JSONL**. Zey do not care for ze colorful buttons or ze scrolling parchment of ze GitHub UI; zey vish to see ze **Mathematical Score**!
 
-Doghouse is built for these thinking machines. It provides a durable, logical stream of PR history, allowing ze automatons to reason about transitions—`fail -> pass`, `new -> resolved`—vithout being blinded by ze fog of ze human interface. 
+Doghouse is built for these thinking machines. It provides a durable, logical stream of PR history, allowing ze automatons to reason about transitions—`fail -> pass`, `new -> resolved`—vithout being blinded by ze fog of ze human interface.
 
 "It is exactly like ze **Pianola**!" *PhiedBach exclaims, mimicking a player piano with his fingers.* "You do not need ze virtuoso to sit at ze bench vhen you have ze **Paper Roll mit ze holes**! Ze JSONL, it is ze punched-tape of ze soul! Ze Automaton, he does not need to 'see' ze keys move; he just feels ze sequence of ze perforations und... *VOILA!*... ze symphony plays itself!"
 
@@ -201,7 +201,7 @@ Doghouse is built for these thinking machines. It provides a durable, logical st
 
 ## Philosophie: Warum „Draft Punks“?
 
-Ah, yes. Where were we? Ja! 
+Ah, yes. Where were we? Ja!
 
 Because every pull request begins as a draft, rough, unpolished, full of potential. Und because BunBun's reviews are robotic precision. Und because ze wonderful Daft Punks — always the two of them — compose fugues for robots.
 
