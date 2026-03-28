@@ -58,3 +58,4 @@ Committed failing tests first, then implemented the features. Left tests in plac
 ### What could we have done differently
 Include a lightweight script or Makefile target that ensures a dev venv with pytest is provisioned before test steps, or run tests inside CI where the toolchain is guaranteed.
 \n## 2026-03-27: Doghouse Reboot (The Great Pivot)\n- Deleted legacy Draft Punks TUI and GATOS/git-mind kernel.\n- Pivot to DOGHOUSE: The PR Flight Recorder.\n- Implemented core Doghouse engine (Snapshot, Sortie, Delta).\n- Implemented GitHub adapter using 'gh' CLI + GraphQL for review threads.\n- Implemented CLI 'doghouse snapshot' and 'doghouse history'.\n- Verified on real PR (flyingrobots/draft-punks PR #3).\n- Added unit tests for DeltaEngine.
+\n## 2026-03-27: Soul Restored\n- Restored PhiedBach / BunBun narrative to README.md.\n- Unified Draft Punks (Conductor) and Doghouse (Recorder) vision.\n- Finalized engine for feat/doghouse-reboot.

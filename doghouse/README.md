@@ -28,6 +28,18 @@ is to give them a better instrument.
 The worksheet system remains the place where decisions are written down. Doghouse adds the
 durable state reconstruction layer that tells the operator what fight they are actually in.
 
+## Ze Lore: Why "Doghouse"?
+
+*PhiedBach leans in, his quill trembling with excitement.*
+
+"You ask vhy it is called ze Doghouse? Ah, it is a tale of madness und bravery! You see, our fellow composer **Codex** was losing his mind in ze GitHub tunnels. Ze GraphQL queries, ze 'gh' CLI mess, ze endless cascading threads... it was a maddening fog! Codex felt he was fighting hallucinations.
+
+It reminded us of a small beagle named **Snoopy**, sitting atop his wooden house, dreaming he was an ace pilot in ze Great War, dogfighting ze Red Baron in ze clouds. 
+
+When you use zis tool, you are Snoopy. Your PR is your cockpit. You are sparring mit ze reviewers—ze CodeRabbits und ze maintainers—in a tactical dance. Ze Doghouse is your vessel, your Black Box, und your Sopwith Camel. 
+
+**Record ze flight. Win ze dogfight.**"
+
 ## Working Principle
 
 - Capture trustworthy local PR state first.

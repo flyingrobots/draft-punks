@@ -64,29 +64,30 @@ def snapshot(
         console.print(json.dumps(output, indent=2))
         return
 
-    console.print(f"📡 [bold]Capturing sortie for {repo} PR #{pr}...[/bold]")
+    console.print(f"📡 [bold]PhiedBach adjusts his spectacles... Capturing sortie for {repo} PR #{pr}...[/bold]")
+    console.print("[dim italic]BunBun thumps his leg in approval...[/dim italic]")
 
-    console.print(f"\n[bold blue]Snapshot captured at {snapshot.timestamp}[/bold blue]")
+    console.print(f"\n[bold blue]Snapshot captured at {snapshot.timestamp} 🎼[/bold blue]")
     console.print(f"SHA: [dim]{snapshot.head_sha}[/dim]")
     
     # Show Delta
     if delta.baseline_sha:
-        console.print(f"\n[bold]Delta against {delta.baseline_timestamp}:[/bold]")
+        console.print(f"\n[bold]Ze Delta against {delta.baseline_timestamp}:[/bold]")
         if delta.head_changed:
-            console.print(f"  [yellow]SHA changed: {delta.baseline_sha[:7]} -> {snapshot.head_sha[:7]}[/yellow]")
+            console.print(f"  [yellow]SHA changed: {delta.baseline_sha[:7]} -> {snapshot.head_sha[:7]} (A new movement begins!)[/yellow]")
             
         if delta.removed_blockers:
             for b in delta.removed_blockers:
-                console.print(f"  [green]✓ Resolved: {b.message}[/green]")
+                console.print(f"  [green]✓ Resolved: {b.message} (Beautiful counterpoint!)[/green]")
         
         if delta.added_blockers:
             for b in delta.added_blockers:
-                console.print(f"  [red]+ New: {b.message}[/red]")
+                console.print(f"  [red]+ New: {b.message} (A discordant note arrives!)[/red]")
     else:
-        console.print("\n[dim]First snapshot for this PR.[/dim]")
+        console.print("\n[dim]First snapshot for this PR. Ze ledger is clean.[/dim]")
 
     # Current Blockers Table
-    table = Table(title=f"Live Blockers for PR #{pr}", show_header=True)
+    table = Table(title=f"Live Blockers for PR #{pr} (Ze Blocker Set)", show_header=True)
     table.add_column("Type", style="cyan")
     table.add_column("Severity", style="magenta")
     table.add_column("Message")
@@ -97,7 +98,7 @@ def snapshot(
         
     console.print(table)
     
-    console.print(f"\n[bold green]Verdict: {delta.verdict}[/bold green]")
+    console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict}[/bold green]")
 
 from ..core.services.playback_service import PlaybackService
 from pathlib import Path
@@ -117,23 +118,23 @@ def playback(
     
     baseline, current, delta = service.run_playback(playback_path)
     
-    console.print(f"🎬 [bold]Running playback: {name}[/bold]")
+    console.print(f"🎬 [bold]PhiedBach raises his baton... Running playback: {name}[/bold]")
     
     # Show Delta
     if baseline:
-        console.print(f"\n[bold]Delta against {baseline.timestamp}:[/bold]")
+        console.print(f"\n[bold]Ze Delta against {baseline.timestamp}:[/bold]")
         if delta.head_changed:
-            console.print(f"  [yellow]SHA changed: {baseline.head_sha[:7]} -> {current.head_sha[:7]}[/yellow]")
+            console.print(f"  [yellow]SHA changed: {baseline.head_sha[:7]} -> {current.head_sha[:7]} (A shift in ze score!)[/yellow]")
             
         if delta.removed_blockers:
             for b in delta.removed_blockers:
-                console.print(f"  [green]✓ Resolved: {b.message}[/green]")
+                console.print(f"  [green]✓ Resolved: {b.message} (Harmony is restored!)[/green]")
         
         if delta.added_blockers:
             for b in delta.added_blockers:
-                console.print(f"  [red]+ New: {b.message}[/red]")
+                console.print(f"  [red]+ New: {b.message} (An unexpected dissonance!)[/red]")
     else:
-        console.print("\n[dim]No baseline for this playback.[/dim]")
+        console.print("\n[dim]No baseline for this playback score.[/dim]")
 
     # Current Blockers Table
     table = Table(title=f"Current Blockers (Playback: {name})", show_header=True)
@@ -146,7 +147,7 @@ def playback(
         table.add_row(b.type.value, b.severity.value, b.message, style=severity_style if b.severity == BlockerSeverity.BLOCKER else None)
         
     console.print(table)
-    console.print(f"\n[bold green]Verdict: {delta.verdict}[/bold green]")
+    console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict}[/bold green]")
 
 if __name__ == "__main__":
     app()
