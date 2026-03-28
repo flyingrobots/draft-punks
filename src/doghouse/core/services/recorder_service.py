@@ -6,7 +6,7 @@ from ..ports.github_port import GitHubPort
 from ..ports.storage_port import StoragePort
 from .delta_engine import DeltaEngine
 
-from ..adapters.git.git_adapter import GitAdapter
+from ...adapters.git.git_adapter import GitAdapter
 
 class RecorderService:
     """Orchestrator for capturing PR state and generating deltas."""
