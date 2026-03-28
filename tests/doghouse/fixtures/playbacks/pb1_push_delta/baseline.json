@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-03-27T08:00:00Z",
+  "head_sha": "sha1",
+  "blockers": [
+    {
+      "id": "check-ci-test",
+      "type": "failing_check",
+      "severity": "blocker",
+      "message": "Check failed: ci-test",
+      "metadata": {}
+    }
+  ],
+  "metadata": {}
+}

@@ -34,12 +34,11 @@ addopts = "-q"
  ]
 
 [project.scripts]
- draft-punks = "draft_punks.entry:run"
- git-mind = "git_mind.cli:run"
+ doghouse = "doghouse.cli.main:app"
 
 [build-system]
 requires = ["hatchling>=1.21"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/draft_punks"]
+packages = ["src/doghouse"]

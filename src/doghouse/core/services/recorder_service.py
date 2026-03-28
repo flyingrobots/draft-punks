@@ -1,0 +1,45 @@
+import datetime
+from typing import Optional, List, Tuple
+from ..domain.snapshot import Snapshot
+from ..domain.delta import Delta
+from ..ports.github_port import GitHubPort
+from ..ports.storage_port import StoragePort
+from .delta_engine import DeltaEngine
+
+class RecorderService:
+    """Orchestrator for capturing PR state and generating deltas."""
+    
+    def __init__(
+        self, 
+        github: GitHubPort, 
+        storage: StoragePort,
+        delta_engine: DeltaEngine
+    ):
+        self.github = github
+        self.storage = storage
+        self.delta_engine = delta_engine
+
+    def record_sortie(self, repo: str, pr_id: int) -> Tuple[Snapshot, Delta]:
+        """Capture the current state of a PR and compute the delta against the last snapshot."""
+        # 1. Capture current state
+        head_sha = self.github.get_head_sha(pr_id)
+        blockers = self.github.fetch_blockers(pr_id)
+        metadata = self.github.get_pr_metadata(pr_id)
+        
+        current_snapshot = Snapshot(
+            timestamp=datetime.datetime.now(),
+            head_sha=head_sha,
+            blockers=blockers,
+            metadata=metadata
+        )
+        
+        # 2. Get baseline
+        baseline = self.storage.get_latest_snapshot(repo, pr_id)
+        
+        # 3. Compute delta
+        delta = self.delta_engine.compute_delta(baseline, current_snapshot)
+        
+        # 4. Persist
+        self.storage.save_snapshot(repo, pr_id, current_snapshot)
+        
+        return current_snapshot, delta
