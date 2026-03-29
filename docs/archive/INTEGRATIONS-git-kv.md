@@ -23,38 +23,46 @@ This document maps overlap and defines a phased plan to interoperate and, where 
 ## Phased Plan
 
 ### Phase 0 — Adapter & Protocol
+
 - Add a `kv` module to GATOS with a backend interface: `LocalPlumbingKV` and `GitKVBackend` (CLI/stdio bridge or direct plumbing if we vend a library).
 - JSONL commands: `kv.get`, `kv.set`, `kv.del`, `kv.mset`, `kv.scan`.
 - If `git kv` is on PATH and `.kv/policy.yaml` exists, default to `GitKVBackend`; otherwise use `LocalPlumbingKV` under `refs/mind/kv/<ns>`.
 
 ### Phase 1 — Index & TTL Alignment
+
 - When `GitKVBackend` is active, defer listing to `refs/kv-index/<ns>`.
 - Implement TTL and read‑side expiry semantics to match `git-kv` (store `expire_at` in meta; compactor writes a new commit that removes expired items).
 
 ### Phase 2 — Chunked Values & Artifacts
+
 - For KV values above threshold, use `git-kv` chunk manifests; for general GATOS artifacts, continue with LFS descriptors.
 - Provide a migration path for existing large KV values stored via LFS to chunked manifests.
 
 ### Phase 3 — Gateway & Remotes
+
 - Introduce a `mind` remote for state and a `kv` remote for `git-kv` refs, or keep a single repo with split ref spaces.
 - Add `dp kv remote setup` that delegates to `git kv remote setup` to configure `pushurl` to Stargate.
 - Optionally route some GATOS state pushes via Stargate (policy enforcement) when configured.
 
 ### Phase 4 — Observability & Watchers
+
 - Expose GATOS bus subscribers compatible with `git-kv` watchlog/events.
 - Surface mirror watermarks for read‑after‑write when reading from mirrors.
 
 ## Open Questions
+
 - Do we embed `git-kv` as a library (direct plumbing) or shell out to its CLI? Initial approach: shell out; medium‑term: shared plumbing lib.
 - Should `git-kv` and GATOS share a repo (split namespaces) or use separate repos with submodules/remotes? Start with shared repo; keep an option to split.
 - Trailer harmonization: adopt generic keys (e.g., `Op`, `Args`, `Result`, `State-Hash`, `Idempotency`, `Version`) or keep project‑prefixed forms? Proposed: generic keys with optional project prefix for routers.
 
 ## Risks & Mitigations
+
 - Diverging semantics: keep a single integration spec and tests for both backends.
 - Performance drift: use `git-kv` index for listing; compaction for large histories; avoid scanning.
 - Policy mismatch: define a superset policy schema and validate both `.mind/policy.yaml` and `.kv/policy.yaml` against it.
 
 ## Next Steps
+
 - Implement `GitKVBackend` adapter and `kv.*` JSONL commands in GATOS.
 - Write tests for CAS, TTL, and scan behavior under both backends.
 - Update TECH‑SPECs with reference layouts; add CLI examples.

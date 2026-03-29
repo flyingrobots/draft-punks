@@ -166,6 +166,7 @@ Deliverables
 ---
 
 ## Backlog / Nice-to-Haves (Post-SPEC)
+
 - DP-F-19 Image Splash (bunbun.webp) behind `DP_TUI_IMAGE` (polish).
 - Advanced prompt templating (file hunk extraction; language hints).
 - Multi-provider capability detection and auto-JSON flags.
@@ -174,6 +175,7 @@ Deliverables
 ---
 
 ## Cross-Cutting Tech Debt & Risks
+
 - Textual API drift (OptionList, ListView): maintain compatibility shims; pin minimum version.
 - GraphQL rate limiting/pagination: ensure paging cursors and progress callbacks surface in UI.
 - Git operations safety: dry-run flags where possible; clear messaging on failures.

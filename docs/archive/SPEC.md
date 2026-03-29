@@ -2,7 +2,7 @@
 
 ## Navigation Flow
 
-```
+```text
 Title Screen
 └── Main Menu (PR Selection)
     └── PR View (Comment Thread Selection)
@@ -18,7 +18,7 @@ Title Screen
 
 A scroll view looks like:
 
-```
+```text
 # {title}
 
 {scroll items}
@@ -72,7 +72,7 @@ graph TD
 
 ## UX Screen
 
-```
+```text
 ╔══════════════════════════════════════════════════╗
 ║                                                  ║
 ║              ██████╗ ██████╗  █████╗ ███████╗   ║
@@ -156,7 +156,7 @@ graph TD
 
 ### Git Repo Info Header
 
-```
+```text
 {repo_path} ⎇ {ref} {dirty}
 ```
 
@@ -168,7 +168,7 @@ graph TD
 
 If git repo is dirty, show an alert banner:
 
-```
+```text
 ┌────────────────────────────────────────────────┐
 │ ⚠️  WARNING: Dirty Git Repo                    │
 │                                                │
@@ -188,7 +188,7 @@ A scrollable list view with selection and picking. User uses the up or down arro
 
 Represents an open PR and displays information about its current state:
 
-```
+```text
 ░ {icon} PR #{number} {info} ⎇ {branch}
 ░ 👤 {author} ⏳ {age}
 ░ {title}
@@ -211,7 +211,7 @@ Represents an open PR and displays information about its current state:
 
 `{info}` is a string like this:
 
-```
+```text
 { i: 1, e: 4 }
 ```
 
@@ -244,13 +244,13 @@ It should be formatted:
 
 Example:
 
-```
+```text
 This is a really long title that is way longer than 50 characters long
 ```
 
 becomes:
 
-```
+```text
 This is a really long title that is way longer […]
 ```
 
@@ -258,7 +258,7 @@ This is a really long title that is way longer […]
 
 If there are 3 open PRs, it might look like (the first one is selected):
 
-```
+```text
 # Open Pull Requests
 
 →   █ 🟡 PR #22 { i: 1 } ⎇ feat/something-cool
@@ -284,7 +284,7 @@ Displaying [1-3] of 3
 
 For example: if only 3 fit on-screen, but there are 12 total, it might look like this:
 
-```
+```text
 # Open Pull Requests
 
     ░ 🟡 PR #12 { i: 4 } ⎇ chore/docs-update
@@ -363,7 +363,7 @@ Shows all comment threads for the selected PR. User can navigate through unresol
 
 ### Header
 
-```
+```text
 PR #{number}: {title}
 ⎇ {branch} → {base_branch}
 👤 {author} | {status_badge} | 💬 {thread_count} threads ({unresolved_count} unresolved)
@@ -382,7 +382,7 @@ PR #{number}: {title}
 
 A scrollable list of comment threads. Each thread shows:
 
-```
+```text
 ░ {icon} {file_path}:{line}
 ░ 💬 {comment_count} | 👤 {first_commenter} | ⏳ {age}
 ░ {first_comment_preview}
@@ -411,7 +411,7 @@ A scrollable list of comment threads. Each thread shows:
 
 ### Example
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ PR #22: Adds something cool to the main program              ║
 ║ ⎇ feat/something-cool → main                                 ║
@@ -499,7 +499,7 @@ Shows the full comment thread. User can read through comments sequentially, mark
 
 ### Header
 
-```
+```text
 Thread: {file_path}:{line}
 Status: {status} | 💬 {comment_count} comments
 ```
@@ -512,7 +512,7 @@ Status: {status} | 💬 {comment_count} comments
 
 Shows one comment at a time with full content:
 
-```
+```text
 ┌────────────────────────────────────────────────┐
 │ 👤 {username} | ⏳ {age}                        │
 ├────────────────────────────────────────────────┤
@@ -539,7 +539,7 @@ Comment [{current}] of [{total}]
 
 If available, show relevant code context above the comment:
 
-```
+```text
 ┌─ Code Context ────────────────────────────────┐
 │  40 | fn process_data(input: &str) -> Result {│
 │  41 |     let parsed = parse(input)?;          │
@@ -550,7 +550,7 @@ If available, show relevant code context above the comment:
 
 ### Example
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ Thread: src/main.rs:42                                       ║
 ║ Status: 🔴 Unresolved | 💬 3 comments                        ║
@@ -662,7 +662,7 @@ The LLM View has two modes:
 
 When entering LLM View from Comment View, first show a confirmation screen:
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ Send to LLM?                                                 ║
 ║ Thread: src/main.rs:42                                       ║
@@ -716,7 +716,7 @@ When entering LLM View from Comment View, first show a confirmation screen:
 
 ### Prompt Editor (if `e` selected)
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ Edit Prompt                                                  ║
 ║ Thread: src/main.rs:42                                       ║
@@ -749,7 +749,7 @@ When entering LLM View from Comment View, first show a confirmation screen:
 
 After sending to LLM (either from confirmation or after editing):
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ LLM Assistant | Model: Claude Sonnet 4.5                     ║
 ║ Thread: src/main.rs:42                                       ║
@@ -767,7 +767,7 @@ After sending to LLM (either from confirmation or after editing):
 
 Once complete:
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ LLM Assistant | Model: Claude Sonnet 4.5                     ║
 ║ Thread: src/main.rs:42                                       ║
@@ -831,7 +831,7 @@ Automation Mode is triggered by:
 
 ### Automation Screen
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ LLM Automation Mode | Model: Claude Sonnet 4.5               ║
 ║ Processing unresolved comments...                            ║
@@ -870,7 +870,7 @@ Automation Mode is triggered by:
 
 User can press `Space` at any time to pause automation:
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ LLM Automation Mode - PAUSED                                 ║
 ║ Thread: src/utils.rs:108                                     ║
@@ -906,7 +906,7 @@ After pausing:
 
 When all comments are processed:
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║ Automation Complete! 🎉                                      ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -927,7 +927,7 @@ When all comments are processed:
 
 ### LLM Request Failed
 
-```
+```text
 ┌─ Error ───────────────────────────────────────┐
 │ ❌ Failed to get LLM response                 │
 │                                               │
@@ -979,7 +979,7 @@ mark_resolved_on_apply = false
 
 Accessible via `[s]` from Main Menu:
 
-```
+```text
 ╔══════════════════════════════════════════════════╗
 ║ Settings                                         ║
 ╠══════════════════════════════════════════════════╣
@@ -1005,7 +1005,7 @@ Accessible via `[s]` from Main Menu:
 
 ## No Open PRs
 
-```
+```text
 ╔══════════════════════════════════════════════════╗
 ║ Open Pull Requests                               ║
 ╠══════════════════════════════════════════════════╣
@@ -1020,7 +1020,7 @@ Accessible via `[s]` from Main Menu:
 
 ## No Unresolved Threads
 
-```
+```text
 ╔══════════════════════════════════════════════════╗
 ║ PR #22: Comment Threads                          ║
 ╠══════════════════════════════════════════════════╣
@@ -1034,7 +1034,7 @@ Accessible via `[s]` from Main Menu:
 
 ## GitHub API Rate Limited
 
-```
+```text
 ┌─ Error ───────────────────────────────────────┐
 │ ⚠️  GitHub API Rate Limited                   │
 │                                               │
@@ -1049,7 +1049,7 @@ Accessible via `[s]` from Main Menu:
 
 If user tries to merge or apply changes with dirty repo:
 
-```
+```text
 ┌─ Warning ─────────────────────────────────────┐
 │ ⚠️  Cannot proceed with dirty working tree    │
 │                                               │

@@ -301,6 +301,7 @@
 - [ ] State-transition fixtures.
 - [ ] Replay tests for representative PR scenarios.
 
+<!-- NOTE: DP-US-0201 lives under DP-F-21 intentionally — user stories cross-reference parent features. -->
 ### DP-US-0201 Fetch and Render PR List
 
 #### User Story
