@@ -55,13 +55,17 @@ class GhCliAdapter(GitHubPort):
 
         blockers: list[Blocker] = []
 
-        # 2. Fetch Unresolved threads via GraphQL
+        # 2. Fetch Unresolved threads via GraphQL (paginated)
         owner, name = self._fetch_repo_info()
         gql_query = """
-        query($owner: String!, $repo: String!, $pr: Int!) {
+        query($owner: String!, $repo: String!, $pr: Int!, $cursor: String) {
           repository(owner: $owner, name: $repo) {
             pullRequest(number: $pr) {
-              reviewThreads(first: 100) {
+              reviewThreads(first: 100, after: $cursor) {
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
                 nodes {
                   isResolved
                   comments(first: 1) {
@@ -77,28 +81,47 @@ class GhCliAdapter(GitHubPort):
         }
         """
         try:
-            gql_res = self._run_gh_json([
-                "api", "graphql",
-                "-F", f"owner={owner}",
-                "-F", f"repo={name}",
-                "-F", f"pr={actual_pr_id}",
-                "-f", f"query={gql_query}"
-            ], with_repo=False)
-            threads = gql_res.get("data", {}).get("repository", {}).get("pullRequest", {}).get("reviewThreads", {}).get("nodes", [])
-            for thread in threads:
-                if not thread.get("isResolved"):
-                    comments = thread.get("comments", {}).get("nodes", [])
-                    if comments:
-                        first_comment = comments[0]
-                        msg = first_comment.get("body", "Unresolved thread")
-                        if len(msg) > 80:
-                            msg = msg[:77] + "..."
+            cursor: str | None = None
+            while True:
+                gql_args = [
+                    "api", "graphql",
+                    "-F", f"owner={owner}",
+                    "-F", f"repo={name}",
+                    "-F", f"pr={actual_pr_id}",
+                    "-f", f"query={gql_query}",
+                ]
+                # Omit cursor on first page; GitHub expects null/absent, not empty string
+                if cursor is not None:
+                    gql_args += ["-F", f"cursor={cursor}"]
 
-                        blockers.append(Blocker(
-                            id=f"thread-{first_comment.get('id', 'unknown')}",
-                            type=BlockerType.UNRESOLVED_THREAD,
-                            message=msg
-                        ))
+                gql_res = self._run_gh_json(gql_args, with_repo=False)
+                thread_data = (
+                    gql_res.get("data", {})
+                    .get("repository", {})
+                    .get("pullRequest", {})
+                    .get("reviewThreads", {})
+                )
+                for thread in thread_data.get("nodes", []):
+                    if not thread.get("isResolved"):
+                        comments = thread.get("comments", {}).get("nodes", [])
+                        if comments:
+                            first_comment = comments[0]
+                            msg = first_comment.get("body", "Unresolved thread")
+                            if len(msg) > 80:
+                                msg = msg[:77] + "..."
+
+                            blockers.append(Blocker(
+                                id=f"thread-{first_comment.get('id', 'unknown')}",
+                                type=BlockerType.UNRESOLVED_THREAD,
+                                message=msg
+                            ))
+
+                page_info = thread_data.get("pageInfo", {})
+                next_cursor = page_info.get("endCursor")
+                if page_info.get("hasNextPage") and next_cursor and next_cursor != cursor:
+                    cursor = next_cursor
+                else:
+                    break
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired,
                 json.JSONDecodeError, KeyError) as e:
             blockers.append(Blocker(
