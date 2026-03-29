@@ -143,11 +143,18 @@ def test_verdict_pending_checks_before_approval():
 
 
 # --- PhiedBach's theatrical verdicts (verdict_display) ---
+# verdict_display is randomized, so tests check that the result is one of the
+# known variations (imported from the module) and carries the right emoji.
+
+from doghouse.core.domain.delta import (
+    _V_MERGE_READY, _V_MERGE_CONFLICT, _V_FAILING_CHECKS,
+    _V_UNRESOLVED_THREADS, _V_PENDING_CHECKS, _V_APPROVAL_NEEDED,
+)
+
 
 def test_verdict_display_merge_ready():
     delta = _make_delta([])
-    assert "Ze orchestra is in tune" in delta.verdict_display
-    assert "mein Freund" in delta.verdict_display
+    assert delta.verdict_display in _V_MERGE_READY
 
 
 def test_verdict_display_merge_conflict():
@@ -156,7 +163,7 @@ def test_verdict_display_merge_conflict():
                 message="conflict", is_primary=True),
     ]
     delta = _make_delta(blockers)
-    assert "terrible knot" in delta.verdict_display
+    assert delta.verdict_display in _V_MERGE_CONFLICT
 
 
 def test_verdict_display_failing_checks_singular():
@@ -164,7 +171,8 @@ def test_verdict_display_failing_checks_singular():
         Blocker(id="check-ci", type=BlockerType.FAILING_CHECK, message="CI"),
     ]
     delta = _make_delta(blockers)
-    assert "1 instrument is out of tune" in delta.verdict_display
+    assert "1 instrument" in delta.verdict_display
+    assert "🛑" in delta.verdict_display
 
 
 def test_verdict_display_failing_checks_plural():
@@ -173,7 +181,8 @@ def test_verdict_display_failing_checks_plural():
         Blocker(id="check-b", type=BlockerType.FAILING_CHECK, message="b"),
     ]
     delta = _make_delta(blockers)
-    assert "2 instruments are out of tune" in delta.verdict_display
+    assert "2 instruments" in delta.verdict_display
+    assert "🛑" in delta.verdict_display
 
 
 def test_verdict_display_unresolved_threads():
@@ -182,7 +191,9 @@ def test_verdict_display_unresolved_threads():
         Blocker(id="t2", type=BlockerType.UNRESOLVED_THREAD, message="fix2"),
     ]
     delta = _make_delta(blockers)
-    assert "2 voices remain unanswered" in delta.verdict_display
+    assert "2" in delta.verdict_display
+    assert "voice" in delta.verdict_display
+    assert "💬" in delta.verdict_display
 
 
 def test_verdict_display_approval_needed():
@@ -191,5 +202,4 @@ def test_verdict_display_approval_needed():
                 message="Review required", severity=BlockerSeverity.WARNING),
     ]
     delta = _make_delta(blockers)
-    assert "Ze conductor" in delta.verdict_display
-    assert "blessing" in delta.verdict_display
+    assert delta.verdict_display in _V_APPROVAL_NEEDED
