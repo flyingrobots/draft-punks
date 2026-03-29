@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-03-27T08:05:00Z",
+  "head_sha": "sha2",
+  "blockers": [
+    {
+      "id": "thread-abc1234",
+      "type": "unresolved_thread",
+      "severity": "blocker",
+      "message": "Modernize type hints",
+      "metadata": {"path": "src/core.py"}
+    }
+  ],
+  "metadata": {}
+}

@@ -1,0 +1,6 @@
+{
+  "llm": "claude",          
+  "llm_cmd": null,          
+  "force_json": true,       
+  "ui": { "theme": "auto" }
+}

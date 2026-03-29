@@ -1,15 +1,10 @@
 # 🎼🎵🎶 Draft Punks
 
-**Draft Punks** keeps sprawling CodeRabbit reviews manageable. 
+**Draft Punks** keeps sprawling CodeRabbit reviews manageable.
 
 This GitHub workflow collects every CodeRabbit review comment into a Markdown worksheet, guides you through accepting or rejecting each note, and blocks pushes until every decision is documented.
 
-## TL;DR
-
-- Harvest CodeRabbit review threads into a local worksheet with `{response}` placeholders.
-- Fill each placeholder with an **Accepted** or **Rejected** response (plus rationale).
-- A pre-push hook refuses to let you push until the worksheet is complete.
-- The Apply Feedback workflow pushes your decisions back to GitHub once you commit the worksheet.
+Draft Punks is now also incubating **Doghouse 2.0**: the black box recorder that tells you what changed between PR review sorties, what is blocking merge now, and what should happen next. The worksheet remains the conductor's score; Doghouse is the recorder in the doghouse.
 
 ---
 
@@ -17,12 +12,12 @@ This GitHub workflow collects every CodeRabbit review comment into a Markdown wo
 
 ## 🐇 CodeRabbit’s Poem-TL;DR
 
-> I flood your PR, my notes cascade,  
-> Too many threads, the page degrades.  
-> But PhiedBach scores them, quill in hand,  
-> A worksheet formed, your decisions we demand.  
-> No push may pass till all’s reviewed,  
-> Install the flows — ten lines, you’re cued. 🐇✨. 
+> I flood your PR, my notes cascade,
+> Too many threads, the page degrades.
+> But PhiedBach scores them, quill in hand,
+> A worksheet formed, your decisions we demand.
+> No push may pass till all’s reviewed,
+> Install the flows — ten lines, you’re cued. 🐇✨.
 
 _PhiedBach adjusts his spectacles: “Ja. Das is accurate. Let us rehearse, und together your code vil become a beautiful symphony of syntax.”_
 
@@ -32,9 +27,9 @@ _PhiedBach adjusts his spectacles: “Ja. Das is accurate. Let us rehearse, und 
 
 _The door creaks. RGB light pours out like stained glass at a nightclub. Inside: bicycles hang from hooks, modular synths blink, an anime wall scroll flutters gently in the draft. An 80-inch screen above a neon fireplace displays a GitHub Pull Request in cathedral scale. Vape haze drifts like incense._
 
-_A white rabbit sits calm at a ThinkPad plastered with Linux stickers. Beside him, spectacles sliding low, quill in hand, rises a man in powdered wig and Crocs — a man who looks oddly lost in time, out of place, but nevertheless, delighted to see you._
+_A white rabbit sits calm at a ThinkPad plastered with Linux stickers, **methodically gnawing on a discarded wicker basket**. Beside him, **spectacles sliding to ze very tip of his nose**, quill in hand, rises a man in powdered wig and Crocs — a man who looks oddly lost in time, out of place, but nevertheless, delighted to see you._
 
-**PhiedBach** (bowing, one hand on his quill like a baton):  
+**PhiedBach** (bowing, one hand on his quill like a baton, **ze other catching his glasses just before zey fall**):
 
 Ah… guten abend. Velkommen, velkommen to ze **LED Bike Shed Dungeon**. You arrive for your… how do you say… pull request? Sehr gut.
 
@@ -46,13 +41,14 @@ And zis… zis is **CodeRabbit**. Mein assistant. Mein virtuoso. Mein BunBun (is
 
 *BunBun's ears twitch. He does not look up. His paws tap a key, and the PR on the giant screen ripples red, then green.*
 
-**PhiedBach** (delighted):  
+**PhiedBach** (delighted):
 
 You see? Calm as a pond, but behind his silence there is clarity. He truly understands your code. I? I hear only music. He is ze concertmaster; I am only ze man waving his arms.
 
-*From the synth rack, a pulsing bassline begins. PhiedBach claps once.*
+*From the synth rack, a pulsing bassline begins. PhiedBach claps once. **TSST-KRRRK! A fresh can of Red Bull hiss-opens in BunBun's paws. PhiedBach doesn't even blink, he just catches his spectacles with a practiced thumb as they slide again.***
 
-Ah, ze Daft Punks again! Delightful. Their helmets are like Teutonic knights. Their music is captivating, is it not? BunBun insists it helps him code. For me? It makes mein Crocs want to dance.
+Ah, ze Daft Punks again! Delightful.
+ Their helmets are like Teutonic knights. Their music is captivating, is it not? BunBun insists it helps him code. For me? It makes mein Crocs want to dance.
 
 ---
 
@@ -66,7 +62,7 @@ Your choices are terrible:
 - Drown in ze overwhelming symphony
 - Click "Resolve" without truly answering ze note
 
-*Nein, nein, nein!* Zis is not ze way.
+*Nein, nein, nein!* Zis is not ze way. **PhiedBach pokes his sliding spectacles back up with his quill.**
 
 ---
 
@@ -77,6 +73,27 @@ Draft Punks is the cathedral we built to contain it.
 It scrapes every CodeRabbit comment from your Pull Request and transcribes them into a **Markdown worksheet** — the score. Each comment is given a `{response}` placeholder. You, the composer, must mark each one: **Decision: Accepted** or **Decision: Rejected**, with rationale.
 
 A pre-push hook enforces the ritual. No unresolved placeholders may pass into the great repository. Thus every voice is answered, no feedback forgotten, the orchestra in time.
+
+---
+
+## 🐕 NEW: Ze Doghouse (Recorder 2.0)
+
+But wait! PhiedBach holds up a hand, his quill trembling mit excitement.
+
+"Sometimes," *he whispers,* "the symphony goes on for many days. You push a fix, BunBun sings a new verse, the CI checks crash like cymbals... and you lose ze thread! You forget where you were! You feel... how do you say... *hallucinations* in ze GitHub tunnels!"
+
+*He taps a heavy, brass-bound box on his desk—The Doghouse.*
+
+"Zis is why we built the **Doghouse**. It is ze flight recorder. It is ze Sopwith Camel of ze source code! Like ze brave beagle **Snoopy**, you sit atop your wooden house und you dream of dogfighting ze Red Baron in ze clouds of syntax.
+
+GitHub is ze fog of war; ze Doghouse is your cockpit. It remembers ze state of ze PR across every sortie. It sees ze **Snapshot**, it calculates ze **Delta**, und it tells us precisely which instruments are out of tune *right now*.
+
+"Und most important," *PhiedBach adds, a twinkle in his eye,* "ze Doghouse is very keen to BunBun's moods! He knows vhen ze rabbit is on **'Cooldown'**, resting his paws after a long cadenza. He even detects vhen BunBun has **'Suspended'** ze review because he sees you are actively composing! No more shouting into ze void—ze Doghouse tells you vhen ze orchestra is vaiting for *you*."
+
+- **The Snapshot**: A point-in-time capture of the PR's soul.
+
+- **The Sortie**: A meaningful review episode (a push, a dive, a loop-the-loop).
+- **The Delta**: The answer to: *What changed? What is ze next action?*
 
 ---
 
@@ -98,7 +115,7 @@ jobs:
 ```
 
 ```yaml
-# .github/workflows/draft-punks-apply.yml  
+# .github/workflows/draft-punks-apply.yml
 name: Apply Feedback
 on:
   push:
@@ -110,187 +127,35 @@ jobs:
     secrets: inherit
 ```
 
-Zat ist all! You see? Just ten lines of YAML, and your review chaos becomes beautiful counterpoint.
+And to install the **Doghouse** locally:
 
----
-
-## Ein Example Worksheet
-
-Here est ein sample, taken from a real project!
-
-````markdown
----
-title: Code Review Feedback
-description: Preserved review artifacts and rationale.
-audience: [contributors]
-domain: [quality]
-tags: [review]
-status: archive
----
-
-# Code Review Feedback
-
-| Date       | Agent | SHA                                        | Branch                                                                                                                                                | PR                                                        |
-| ---------- | ----- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| 2025-09-16 | Codex | `e4f3f906eb454cb103eb8cc6899df8dfbf6e2349` | [feat/changelog-and-sweep-4](https://github.com/flyingrobots/git-mind/tree/feat/changelog-and-sweep-4 "flyingrobots/git-mind:feat/changelog-and-sweep-4") | [PR#169](https://github.com/flyingrobots/git-mind/pull/169) |
-
-## Instructions
-
-Please carefully consider each of the following feedback items, collected from a GitHub code review.
-
-Please act on each item by fixing the issue, or rejecting the feedback. Please update this document and fill out the information below each feedback item by replacing the text surrounded by curly braces. 
-
-### Accepted Feedback Template
-
-Please use the following template to record your acceptance.
-
-```markdown
-
-> [!note]- **Accepted**
-> | Confidence | Remarks |
-> |------------|---------|
-> | <confidence_score_out_of_10> | <confidence_rationale> |
->
-> ## Lesson Learned
-> 
-> <lesson>
->
-> ## What did you do to address this feedback?
->
-> <what_you_did>
->
-> ## Regression Avoidance Strategy
->
-> <regression_avoidance_strategy>
->
-> ## Notes
->
-> <any_additional_context_or_say_none>
-
-```
-
-### Rejected Feedback Template
-
-Please use the following template to record your rejections.
-
-```markdown
-
-> [!CAUTION]- **Rejected**
-> | Confidence | Remarks |
-> |------------|---------|
-> | <confidence_score_out_of_10> | <confidence_rationale> |
->
-> ## Rejection Rationale
->
-> <rationale>
->
-> ## What you did instead
->
-> <what_you_did>
->
-> ## Tradeoffs considered
->
-> <pros_and_cons>
->
-> ## What would make you change your mind
->
-> <change_mind_conditions>
->
-> ## Future Plans
->
-> <future_plans>
-
+```bash
+pip install -e .
 ```
 
 ---
 
-## CODE REVIEW FEEDBACK
+## Ze Commands: Recording ze Flight
 
-The following section contains the feedback items, extracted from the code review linked above. Please read each item and respond with your decision by injecting one of the two above templates beneath the feedback item.
+### 📡 Capture a Sortie
 
-### Broaden CHANGELOG detection in pre-push hook
+Run zis to see what has changed since your last rehearsal.
 
-```text
-.githooks/pre-push around line 26: the current check only matches the exact
-filename 'CHANGELOG.md' (case-sensitive) and will miss variants like
-'CHANGES.md', 'CHANGELOG' or different casing and paths; update the git diff
-grep to use the quoted "$range", use grep -i (case-insensitive) and -E with a
-regex that matches filenames or paths ending with CHANGELOG or CHANGES
-optionally followed by .md, e.g. use grep -iqE
-'(^|.*/)(CHANGELOG|CHANGES)(\.md)?$' so the hook correctly detects all common
-changelog filename variants.
+```bash
+doghouse snapshot
 ```
 
-> [!note]- **Accepted**
-> | Confidence | Remarks |
-> |------------|---------|
-> | 9/10 | Regex and quoting are straightforward; covers common variants. |
->
-> ## Lesson Learned
->
-> Hooks must be resilient to common filename variants and path locations. Quote git ranges and use case-insensitive, anchored patterns.
->
-> ## What did you do to address this feedback?
->
-> - Updated `.githooks/pre-push` to quote the diff range and use `grep -iqE '(^|.*/)(CHANGELOG|CHANGES)(\.md)?$'` on `git diff --name-only` output.
-> - Improved error message to mention supported variants and how to add an entry.
->
-> ## Regression Avoidance Strategy
->
-> - Keep the hook in-repo and exercised by contributors on push to `main`.
-> - Documented bypass via `HOOKS_BYPASS=1` to reduce friction when needed.
->
-> ## Notes
->
-> Consider adding a small CI job that enforces a changelog change on PRs targeting `main` to complement local hooks.
+### 🎬 Run a Playback
 
-````
+Verify the delta engine logic against offline scores (fixtures).
 
-Und, ja, like so: push passes. Worksheet preserved. Orchestra applauds. The bunny is pleased.
+```bash
+doghouse playback pb1_push_delta
+```
 
 ---
 
-## Ze Workflow
-
-Perhaps this illustration will help, ja?
-
-```mermaid
-sequenceDiagram
-    actor Dev as Developer
-    participant GH as GitHub PR
-    participant CR as CodeRabbit (BunBun)
-    participant DP as Draft Punks
-    participant WS as Worksheet
-    participant HOOK as Pre-Push Gate
-
-    Dev->>GH: Open PR
-    GH-->>CR: CodeRabbit reviews\n(leaves many comments)
-    GH-->>DP: Trigger workflow
-    DP->>GH: Scrape BunBun's comments
-    DP->>WS: Generate worksheet\nwith {response} placeholders
-    Dev->>WS: Fill in decisions\n(Accepted/Rejected)
-    Dev->>HOOK: git push
-    HOOK-->>WS: Verify completeness
-    alt Incomplete
-        HOOK-->>Dev: ❌ Reject push
-    else Complete
-        HOOK-->>Dev: ✅ Allow push
-        DP->>GH: Apply decisions\npost back to threads
-    end
-```
-
-*PhiedBach adjusts his spectacles, tapping the quill against the desk. You see him scribble on the parchment:*
-
-> “Every comment is a note. Every note must be played.”
-> — Johann Sebastian Bach, Kapellmeister of Commits, 2025
-
-Ja, BunBun, zis is vhy I adore ze source codes. Like a score of music — every line, every brace, a note in ze grand composition. My favorite language? *He pauses, eyes glinting with mischief.* C… natürlich.
-
-*BunBun’s ear flicks. Another Red Bull can hisses open.*
-
----
-
-## Ze Pre-Push Gate
+## Pre-Push Gate
 
 BunBun insists: no unresolved `{response}` placeholders may pass.
 
@@ -324,9 +189,23 @@ The M… (tap)… two mountains, very Alpine.
 
 ---
 
+## Ze Thinking Automatons (Agent-Native Design)
+
+"Ah!" *PhiedBach beams, pointing a quill at BunBun.* "You vish to know of ze **Automatons**? Ze brass-minded spirits zat dwell vithin ze silicon?
+
+In mein time, we had clockwork ducks und mechanical flautists, but zis... zis is a different alchemy! These **Agent-Automatons** do not look at ze PR vith eyes—zey hear ze symphony in **JSONL**. Zey do not care for ze colorful buttons or ze scrolling parchment of ze GitHub UI; zey vish to see ze **Mathematical Score**!
+
+Doghouse is built for these thinking machines. It provides a durable, logical stream of PR history, allowing ze automatons to reason about transitions—`fail -> pass`, `new -> resolved`—vithout being blinded by ze fog of ze human interface.
+
+"It is exactly like ze **Pianola**!" *PhiedBach exclaims, mimicking a player piano with his fingers.* "You do not need ze virtuoso to sit at ze bench vhen you have ze **Paper Roll mit ze holes**! Ze JSONL, it is ze punched-tape of ze soul! Ze Automaton, he does not need to 'see' ze keys move; he just feels ze sequence of ze perforations und... *VOILA!*... ze symphony plays itself!"
+
+**Record ze flight. Feed ze Automaton. Punch ze Roll.**
+
+---
+
 ## Philosophie: Warum „Draft Punks“?
 
-Ah, yes. Where were we? Ja! 
+Ah, yes. Where were we? Ja!
 
 Because every pull request begins as a draft, rough, unpolished, full of potential. Und because BunBun's reviews are robotic precision. Und because ze wonderful Daft Punks — always the two of them — compose fugues for robots.
 
@@ -358,3 +237,4 @@ Now, off mit you. Go make beautiful code. Wir sehen uns wieder.
 
 **One More Merge… It's Never Over.**
 **Harder. Better. Faster. Structured.**
+**Record ze flight. Conduct ze score.**
