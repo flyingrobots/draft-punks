@@ -94,6 +94,27 @@ def test_compute_delta_overlapping_blockers():
     assert len(delta.still_open_blockers) == 1
     assert delta.still_open_blockers[0].id == "2"
 
+def test_compute_delta_no_baseline():
+    """First-run delta (baseline=None) should not report head_changed."""
+    engine = DeltaEngine()
+    b = Blocker(id="1", type=BlockerType.UNRESOLVED_THREAD, message="msg")
+
+    current = Snapshot(
+        timestamp=datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc),
+        head_sha="sha1",
+        blockers=[b]
+    )
+
+    delta = engine.compute_delta(None, current)
+
+    assert delta.baseline_sha is None
+    assert delta.current_sha == "sha1"
+    assert not delta.head_changed, "First-run delta must not report head_changed"
+    assert len(delta.added_blockers) == 1
+    assert len(delta.removed_blockers) == 0
+    assert len(delta.still_open_blockers) == 0
+
+
 def test_compute_delta_mutated_blocker():
     # If ID is same but content changes, it's still "still_open" in current logic
     # because ID is the primary key for delta.

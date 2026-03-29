@@ -15,7 +15,7 @@ class Delta:
 
     @property
     def head_changed(self) -> bool:
-        return self.baseline_sha != self.current_sha
+        return self.baseline_sha is not None and self.baseline_sha != self.current_sha
 
     @property
     def improved(self) -> bool:

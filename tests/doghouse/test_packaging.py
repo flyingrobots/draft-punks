@@ -52,8 +52,8 @@ def test_required_metadata_fields():
     assert project.get("description"), "project.description is missing"
 
 
-def test_entry_point_module_importable():
-    """The CLI entry point module declared in pyproject.toml must be importable."""
+def test_entry_point_module_exists():
+    """The CLI entry point module declared in pyproject.toml must exist on disk."""
     pyproject_path = PROJECT_ROOT / "pyproject.toml"
     with open(pyproject_path, "rb") as f:
         data = tomllib.load(f)

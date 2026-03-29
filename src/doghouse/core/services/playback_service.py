@@ -18,12 +18,12 @@ class PlaybackService:
         if not current_path.exists():
             raise FileNotFoundError(f"Required playback file not found: {current_path}")
 
-        with open(current_path) as f:
+        with open(current_path, encoding="utf-8") as f:
             current = Snapshot.from_dict(json.load(f))
 
         baseline = None
         if baseline_path.exists():
-            with open(baseline_path) as f:
+            with open(baseline_path, encoding="utf-8") as f:
                 baseline = Snapshot.from_dict(json.load(f))
 
         delta = self.engine.compute_delta(baseline, current)

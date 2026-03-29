@@ -95,7 +95,7 @@ class GhCliAdapter(GitHubPort):
                             msg = msg[:77] + "..."
 
                         blockers.append(Blocker(
-                            id=f"thread-{first_comment['id']}",
+                            id=f"thread-{first_comment.get('id', 'unknown')}",
                             type=BlockerType.UNRESOLVED_THREAD,
                             message=msg
                         ))
@@ -120,14 +120,15 @@ class GhCliAdapter(GitHubPort):
                     message=f"Check failed: {check_name}",
                     severity=BlockerSeverity.BLOCKER
                 ))
-            elif state in ["PENDING", "IN_PROGRESS", "QUEUED", None]:
-                if check.get("status") != "COMPLETED" or state in ["PENDING", "IN_PROGRESS"]:
-                    blockers.append(Blocker(
-                        id=f"check-{check_name}",
-                        type=BlockerType.PENDING_CHECK,
-                        message=f"Check pending: {check_name}",
-                        severity=BlockerSeverity.INFO
-                    ))
+            elif state in ["PENDING", "IN_PROGRESS", "QUEUED", None] and (
+                check.get("status") != "COMPLETED" or state in ["PENDING", "IN_PROGRESS"]
+            ):
+                blockers.append(Blocker(
+                    id=f"check-{check_name}",
+                    type=BlockerType.PENDING_CHECK,
+                    message=f"Check pending: {check_name}",
+                    severity=BlockerSeverity.INFO
+                ))
 
         # 4. Review Decision
         # reviewDecision is sticky: CHANGES_REQUESTED persists until the

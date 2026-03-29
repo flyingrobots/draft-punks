@@ -53,7 +53,7 @@ class RecorderService:
         metadata = self.github.get_pr_metadata(pr_id)
 
         current_snapshot = Snapshot(
-            timestamp=datetime.datetime.now(),
+            timestamp=datetime.datetime.now(datetime.timezone.utc),
             head_sha=head_sha,
             blockers=blockers,
             metadata=metadata

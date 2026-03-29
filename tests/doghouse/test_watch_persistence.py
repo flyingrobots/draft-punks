@@ -16,7 +16,7 @@ def _make_service(
     remote_blockers: list[Blocker] | None = None,
     local_blockers: list[Blocker] | None = None,
     stored_baseline: Snapshot | None = None,
-):
+) -> tuple[RecorderService, MagicMock]:
     """Build a RecorderService with fake adapters."""
     github = MagicMock()
     github.get_head_sha.return_value = head_sha
@@ -128,6 +128,27 @@ def test_blocker_severity_change_persists():
 
     service.record_sortie("owner/repo", 1)
     storage.save_snapshot.assert_called_once()
+
+
+def test_message_only_change_does_not_persist():
+    """When only a blocker's message changes (same id/type/severity/is_primary),
+    the snapshot is equivalent and must not be saved."""
+    b_v1 = Blocker(id="t1", type=BlockerType.UNRESOLVED_THREAD, message="old msg")
+    b_v2 = Blocker(id="t1", type=BlockerType.UNRESOLVED_THREAD, message="new msg")
+    baseline = Snapshot(
+        timestamp=datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc),
+        head_sha="abc123",
+        blockers=[b_v1],
+    )
+
+    service, storage = _make_service(
+        head_sha="abc123",
+        remote_blockers=[b_v2],
+        stored_baseline=baseline,
+    )
+
+    service.record_sortie("owner/repo", 1)
+    storage.save_snapshot.assert_not_called()
 
 
 def test_first_snapshot_always_persists():

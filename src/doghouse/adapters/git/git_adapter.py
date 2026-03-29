@@ -40,11 +40,15 @@ class GitAdapter(GitPort):
                     severity=BlockerSeverity.WARNING
                 ))
             elif unpushed_res.returncode != 0:
-                # Upstream might be missing
+                stderr = unpushed_res.stderr.strip() if unpushed_res.stderr else ""
+                if "no upstream configured" in stderr or unpushed_res.returncode == 128:
+                    msg = "Local branch has no upstream configured"
+                else:
+                    msg = f"Could not determine unpushed commits: {stderr or 'unknown error'}"
                 blockers.append(Blocker(
                     id="local-no-upstream",
                     type=BlockerType.LOCAL_UNPUSHED,
-                    message="Local branch has no upstream configured",
+                    message=msg,
                     severity=BlockerSeverity.WARNING
                 ))
 

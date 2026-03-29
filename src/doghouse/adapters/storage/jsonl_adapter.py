@@ -41,7 +41,10 @@ class JSONLStorageAdapter(StoragePort):
         with open(path, "r") as f:
             for line in f:
                 if line.strip():
-                    snapshots.append(Snapshot.from_dict(json.loads(line)))
+                    try:
+                        snapshots.append(Snapshot.from_dict(json.loads(line)))
+                    except json.JSONDecodeError:
+                        continue
         return snapshots
 
     def get_latest_snapshot(self, repo: str, pr_id: int) -> Snapshot | None:

@@ -768,7 +768,10 @@ def export(
     github = GhCliAdapter(repo_owner=repo_owner, repo_name=repo_name)
     metadata = github.get_pr_metadata(pr)
 
-    # Capture recent git log for context
+    # Capture recent git log for context.
+    # NOTE: Known limitation — this captures the local git log, which may
+    # differ from the remote PR branch if the local checkout is a different
+    # repo or branch. The local log still provides useful context for repro.
     git_log = subprocess.run(["git", "log", "-n", "10", "--oneline"], capture_output=True, text=True, timeout=30).stdout
 
     repro_bundle = {
@@ -795,6 +798,9 @@ def watch(
     interval: int = typer.Option(180, "--interval", help="Polling interval in seconds")
 ):
     """PhiedBach's Radar: Live monitoring of PR state."""
+    if interval < 1:
+        console.print("[red]Error: --interval must be at least 1 second.[/red]")
+        raise typer.Exit(code=1)
     repo, repo_owner, repo_name, pr = resolve_repo_context(repo, pr)
 
     console.print(f"📡 [bold]{random.choice(_WATCH_OPENING).format(repo=repo, pr=pr)}[/bold]")
