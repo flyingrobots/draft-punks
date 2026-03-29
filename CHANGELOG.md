@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **GraphQL Pagination**: Review thread fetch now paginates past the 100-thread limit, preventing false "merge ready" on large PRs.
+- **Markdownlint Pre-Commit Hook**: `scripts/hooks/pre-commit` runs `markdownlint-cli2` on staged `.md` files (excludes `docs/archive/` and `docs/code-reviews/`).
 - **Doghouse Flight Recorder**: A new agent-native engine for PR state reconstruction.
 - **CLI Subcommands**: `snapshot`, `watch`, `playback`, `export`.
 - **Blocking Matrix**: Logic to distinguish merge conflicts from secondary blockers.

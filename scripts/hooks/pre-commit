@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Pre-commit hook: lint must pass cleanly.
+# Configured via: git config --local core.hooksPath scripts/hooks
+
+echo "pre-commit: checking markdown lint..."
+
+# Only run markdownlint if it's installed
+if command -v markdownlint-cli2 &>/dev/null; then
+    # Lint staged .md files only (skip archived docs and code-review worksheets)
+    STAGED_MD=$(git diff --cached --name-only --diff-filter=ACM -- '*.md' \
+        | grep -v '^docs/archive/' \
+        | grep -v '^docs/code-reviews/' \
+        || true)
+
+    if [ -n "$STAGED_MD" ]; then
+        echo "$STAGED_MD" | xargs markdownlint-cli2
+        echo "pre-commit: markdown lint passed."
+    else
+        echo "pre-commit: no staged markdown files to lint (excluding archive)."
+    fi
+else
+    echo "pre-commit: markdownlint-cli2 not installed, skipping markdown lint."
+    echo "  Install with: npm install -g markdownlint-cli2"
+fi
