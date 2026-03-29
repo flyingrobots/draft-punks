@@ -3,7 +3,7 @@
 Verifies that snapshot, watch, and export all use the same
 repo-context resolution path.
 """
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from doghouse.cli.main import resolve_repo_context
 
 
@@ -18,7 +18,7 @@ def test_resolve_explicit_repo_and_pr():
 
 def test_resolve_parses_owner_name_from_repo_string():
     """The repo string should be split into owner and name."""
-    repo, owner, name, pr = resolve_repo_context("acme/widgets", 7)
+    _repo, owner, name, _pr = resolve_repo_context("acme/widgets", 7)
     assert owner == "acme"
     assert name == "widgets"
 

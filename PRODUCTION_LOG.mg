@@ -24,10 +24,6 @@ Task: <current task id>
 <how could this have been anticipated? how should we have planned for this? what can we do better next time to avoid this sort of issue again?>
 ````
 
-Initial Entries
-
-- (none yet)
-
 ## Incident: Product Pivot to CLI-Only (Git-backed State)
 
 Timestamp: 2025-11-07 19:07:32

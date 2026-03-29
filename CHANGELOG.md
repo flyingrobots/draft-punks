@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+
 - **Doghouse Flight Recorder**: A new agent-native engine for PR state reconstruction.
 - **CLI Subcommands**: `snapshot`, `watch`, `playback`, `export`.
 - **Blocking Matrix**: Logic to distinguish merge conflicts from secondary blockers.
@@ -14,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - **Snapshot Equivalence**: `Snapshot.is_equivalent_to()` for meaningful-change detection.
 
 ### Fixed
+
 - **Merge-Readiness Semantics**: Formal approval state (`CHANGES_REQUESTED`, `REVIEW_REQUIRED`) is now separated from unresolved thread state. Stale `CHANGES_REQUESTED` no longer masquerades as active unresolved work when all threads are resolved.
 - **Verdict Priority Chain**: Fixed dead-code bug where `is_primary` default caused Priority 0 to swallow all BLOCKER-severity items. Merge-conflict check now uses explicit type match. Added approval-needed verdict at Priority 4.
 - **Repo-Context Consistency**: `watch` and `export` now honor `--repo owner/name` via centralized `resolve_repo_context()`. Previously they silently ignored `--repo` and queried the wrong repository.
@@ -47,6 +49,7 @@ All notable changes to this project will be documented in this file.
 - **Docs Drift**: Archived legacy Draft Punks TUI documentation to clear confusion.
 
 ### Tests
+
 - Added blocker-semantics tests (review/thread interaction, verdict priority chain).
 - Added repo-context consistency tests (all commands use `resolve_repo_context`).
 - Added watch persistence tests (dedup on identical polls, persist on meaningful change).
