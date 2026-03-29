@@ -9,13 +9,15 @@ echo "pre-commit: checking markdown lint..."
 # Only run markdownlint if it's installed
 if command -v markdownlint-cli2 &>/dev/null; then
     # Lint staged .md files only (skip archived docs and code-review worksheets)
-    STAGED_MD=$(git diff --cached --name-only --diff-filter=ACM -- '*.md' \
+    # Use NUL-delimited output to handle filenames with spaces safely.
+    STAGED_MD=$(git diff --cached --name-only -z --diff-filter=ACM -- '*.md' \
+        | tr '\0' '\n' \
         | grep -v '^docs/archive/' \
         | grep -v '^docs/code-reviews/' \
         || true)
 
     if [ -n "$STAGED_MD" ]; then
-        echo "$STAGED_MD" | xargs markdownlint-cli2
+        echo "$STAGED_MD" | tr '\n' '\0' | xargs -0 markdownlint-cli2
         echo "pre-commit: markdown lint passed."
     else
         echo "pre-commit: no staged markdown files to lint (excluding archive)."

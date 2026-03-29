@@ -90,10 +90,9 @@ class GhCliAdapter(GitHubPort):
                     "-F", f"pr={actual_pr_id}",
                     "-f", f"query={gql_query}",
                 ]
-                if cursor:
+                # Omit cursor on first page; GitHub expects null/absent, not empty string
+                if cursor is not None:
                     gql_args += ["-F", f"cursor={cursor}"]
-                else:
-                    gql_args += ["-F", "cursor="]
 
                 gql_res = self._run_gh_json(gql_args, with_repo=False)
                 thread_data = (
@@ -118,8 +117,9 @@ class GhCliAdapter(GitHubPort):
                             ))
 
                 page_info = thread_data.get("pageInfo", {})
-                if page_info.get("hasNextPage"):
-                    cursor = page_info["endCursor"]
+                next_cursor = page_info.get("endCursor")
+                if page_info.get("hasNextPage") and next_cursor and next_cursor != cursor:
+                    cursor = next_cursor
                 else:
                     break
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired,
