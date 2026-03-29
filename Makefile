@@ -1,4 +1,4 @@
-.PHONY: dev-venv test snapshot history playback watch export clean help
+.PHONY: dev-venv test snapshot playback watch export clean help
 
 VENV = .venv
 PYTHON = $(VENV)/bin/python3
@@ -9,7 +9,6 @@ help:
 	@echo "  dev-venv: Create venv and install dependencies"
 	@echo "  test: Run unit tests"
 	@echo "  snapshot [PR=id]: Capture PR state"
-	@echo "  history [PR=id]: View PR snapshot history"
 	@echo "  playback NAME=name: Run a playback fixture"
 	@echo "  watch [PR=id]: Monitor PR live"
 	@echo "  export [PR=id]: Create repro bundle"
@@ -25,10 +24,6 @@ test:
 snapshot:
 	@if [ -z "$(PR)" ]; then PYTHONPATH=src $(PYTHON) -m doghouse.cli.main snapshot; \
 	else PYTHONPATH=src $(PYTHON) -m doghouse.cli.main snapshot --pr $(PR); fi
-
-history:
-	@if [ -z "$(PR)" ]; then PYTHONPATH=src $(PYTHON) -m doghouse.cli.main history; \
-	else PYTHONPATH=src $(PYTHON) -m doghouse.cli.main history --pr $(PR); fi
 
 playback:
 	@if [ -z "$(NAME)" ]; then echo "Usage: make playback NAME=pb1_push_delta"; exit 1; fi

@@ -1,25 +1,126 @@
-import random
-import typer
-import sys
-import subprocess
-import json
 import datetime
+import json
+import random
+import subprocess
+import sys
+import time
+from pathlib import Path
 from typing import Optional
+
+import typer
 from rich.console import Console
 from rich.table import Table
-from ..core.services.recorder_service import RecorderService
-from ..core.services.delta_engine import DeltaEngine
+
+from ..adapters.git.git_adapter import GitAdapter
 from ..adapters.github.gh_cli_adapter import GhCliAdapter
 from ..adapters.storage.jsonl_adapter import JSONLStorageAdapter
 from ..core.domain.blocker import BlockerSeverity, BlockerType
+from ..core.domain.delta import Delta
+from ..core.services.delta_engine import DeltaEngine
+from ..core.services.playback_service import PlaybackService
+from ..core.services.recorder_service import RecorderService
 
 app = typer.Typer(help="Doghouse: The PR Flight Recorder")
 console = Console()
 
 
-def _pick(variations: list[str]) -> str:
-    """Choose a random variation from a list."""
-    return random.choice(variations)
+# ---------------------------------------------------------------------------
+# PhiedBach's theatrical verdicts — 5 variations each, randomly chosen.
+# The machine-readable verdict (Delta.verdict) stays terse and stable.
+# These lists live in the CLI layer because randomness is a presentation
+# concern, not a domain concern.
+# ---------------------------------------------------------------------------
+
+_V_MERGE_READY = [
+    "Ze orchestra is in tune. You may merge, mein Freund. 🎼",
+    "Ze symphony is complete! Merge vhen you are ready. 🎼",
+    "All voices are in harmony. Ze merge gate is open. 🎼",
+    "Not a single note out of place. Merge avay! 🎼",
+    "Ze score is flawless. PhiedBach beams. You may merge. 🎼",
+]
+
+_V_MERGE_CONFLICT = [
+    "Ze score has a terrible knot! Resolve ze merge conflicts before anything else. ⚔️",
+    "Mein Gott — ze pages are stuck together! Untangle ze conflicts first. ⚔️",
+    "Ze voices clash in ze worst vay! Fix ze merge conflicts. ⚔️",
+    "Ze manuscript is in disarray! No progress until ze conflicts are resolved. ⚔️",
+    "A terrible knot in ze score! Nothing else matters until zis is undone. ⚔️",
+]
+
+_V_FAILING_CHECKS = [
+    "{n} {noun} {verb} out of tune! Fix ze failing checks. 🛑",
+    "{n} {noun} {verb} hitting sour notes! Ze CI section needs attention. 🛑",
+    "{n} {noun} {verb} screeching! Fix ze checks before ze audience notices. 🛑",
+    "Ze CI section reports {n} {noun} off-key! Attend to zem. 🛑",
+    "{n} {noun} {verb} playing in ze wrong key entirely! Fix ze failing checks. 🛑",
+]
+
+_V_UNRESOLVED_THREADS = [
+    "{n} {noun} {verb} unanswered. Address ze review feedback. 💬",
+    "{n} {noun} {verb} calling from ze back of ze concert hall. Respond to zem. 💬",
+    "{n} {noun} {verb} still vaiting for a reply. Address ze feedback. 💬",
+    "Ze chorus has {n} unacknowledged {noun}. Answer zem. 💬",
+    "{n} {noun} {verb} echoing in ze rafters. Ze review threads need attention. 💬",
+]
+
+_V_PENDING_CHECKS = [
+    "Ze stagehands are still preparing. Vait for CI to finish. ⏳",
+    "Ze backstage crew is not yet ready. Patience, mein Freund. ⏳",
+    "Ze gears are turning behind ze curtain. Vait for CI. ⏳",
+    "Ze orchestra is tuning. CI is still in progress. ⏳",
+    "Ze preparation continues. CI has not yet finished its vork. ⏳",
+]
+
+_V_APPROVAL_NEEDED = [
+    "Ze conductor has not yet given his blessing. Approval is needed. 📋",
+    "Ze maestro's baton remains lowered. You need approval to proceed. 📋",
+    "Ze seal of approval has not yet been pressed into ze vax. 📋",
+    "Ze conductor vaits to see ze final rehearsal. Approval is required. 📋",
+    "No blessing from ze podium yet. Seek approval before merging. 📋",
+]
+
+_V_DEFAULT = [
+    "{n} {noun} {verb} on ze music stand. Resolve zem before ze performance. 🚧",
+    "{n} {noun} {verb} in ze margins. Clear ze remaining blockers. 🚧",
+    "Ze ledger still shows {n} unresolved {noun}. Attend to zem. 🚧",
+    "{n} {noun} {verb} unresolved. Ze symphony cannot begin. 🚧",
+    "PhiedBach counts {n} remaining {noun}. Address zem. 🚧",
+]
+
+
+def _theatrical_verdict(delta: Delta) -> str:
+    """PhiedBach's theatrical verdict for human eyes."""
+    all_current = delta.added_blockers + delta.still_open_blockers
+    if not all_current:
+        return random.choice(_V_MERGE_READY)
+
+    if any(b.type == BlockerType.DIRTY_MERGE_STATE for b in all_current):
+        return random.choice(_V_MERGE_CONFLICT)
+
+    failing = [b for b in all_current if b.type == BlockerType.FAILING_CHECK]
+    if failing:
+        n = len(failing)
+        noun = "instrument" if n == 1 else "instruments"
+        verb = "is" if n == 1 else "are"
+        return random.choice(_V_FAILING_CHECKS).format(n=n, noun=noun, verb=verb)
+
+    threads = [b for b in all_current if b.type == BlockerType.UNRESOLVED_THREAD]
+    if threads:
+        n = len(threads)
+        noun = "voice" if n == 1 else "voices"
+        verb = "remains" if n == 1 else "remain"
+        return random.choice(_V_UNRESOLVED_THREADS).format(n=n, noun=noun, verb=verb)
+
+    if any(b.type == BlockerType.PENDING_CHECK for b in all_current):
+        return random.choice(_V_PENDING_CHECKS)
+
+    if any(b.type == BlockerType.NOT_APPROVED for b in all_current):
+        return random.choice(_V_APPROVAL_NEEDED)
+
+    n = len(all_current)
+    noun = "item" if n == 1 else "items"
+    verb = "remains" if n == 1 else "remain"
+    return random.choice(_V_DEFAULT).format(n=n, noun=noun, verb=verb)
 
 
 # ---------------------------------------------------------------------------
@@ -477,10 +578,10 @@ def resolve_repo_context(
 
     Returns (repo_full, repo_owner, repo_name, pr_number).
     """
-    if not repo or not pr:
+    if repo is None or pr is None:
         detected_repo, detected_pr = _auto_detect_repo_and_pr()
-        repo = repo or detected_repo
-        pr = pr or detected_pr
+        repo = repo if repo is not None else detected_repo
+        pr = pr if pr is not None else detected_pr
 
     if "/" in repo:
         owner, name = repo.split("/", 1)
@@ -500,13 +601,13 @@ def snapshot(
     github = GhCliAdapter(repo_owner=repo_owner, repo_name=repo_name)
     storage = JSONLStorageAdapter()
     engine = DeltaEngine()
-    service = RecorderService(github, storage, engine)
+    service = RecorderService(github, storage, engine, git=GitAdapter())
 
-    snapshot, delta = service.record_sortie(repo, pr)
+    snap, delta = service.record_sortie(repo, pr)
 
     if as_json:
         output = {
-            "snapshot": snapshot.to_dict(),
+            "snapshot": snap.to_dict(),
             "delta": {
                 "baseline_timestamp": delta.baseline_timestamp,
                 "head_changed": delta.head_changed,
@@ -519,29 +620,29 @@ def snapshot(
         sys.stdout.write(json.dumps(output, indent=2) + "\n")
         return
 
-    console.print(f"📡 [bold]{_pick(_SNAPSHOT_OPENING).format(repo=repo, pr=pr)}[/bold]")
-    console.print(f"[dim italic]{_pick(_SNAPSHOT_SUBTEXT)}[/dim italic]")
+    console.print(f"📡 [bold]{random.choice(_SNAPSHOT_OPENING).format(repo=repo, pr=pr)}[/bold]")
+    console.print(f"[dim italic]{random.choice(_SNAPSHOT_SUBTEXT)}[/dim italic]")
 
-    console.print(f"\n[bold blue]Snapshot captured at {snapshot.timestamp} 🎼[/bold blue]")
-    console.print(f"SHA: [dim]{snapshot.head_sha}[/dim]")
+    console.print(f"\n[bold blue]Snapshot captured at {snap.timestamp} 🎼[/bold blue]")
+    console.print(f"SHA: [dim]{snap.head_sha}[/dim]")
 
     # Show Delta
     if delta.baseline_sha:
         console.print(f"\n[bold]Ze Delta against {delta.baseline_timestamp}:[/bold]")
         if delta.head_changed:
             console.print("  [yellow]{msg}[/yellow]".format(
-                msg=_pick(_SHA_CHANGED).format(old=delta.baseline_sha[:7], new=snapshot.head_sha[:7])
+                msg=random.choice(_SHA_CHANGED).format(old=delta.baseline_sha[:7], new=snap.head_sha[:7])
             ))
 
         if delta.removed_blockers:
             for b in delta.removed_blockers:
-                flavor = _pick(_RESOLVED_FLAVOR.get(b.type, ["Resolved."]))
+                flavor = random.choice(_RESOLVED_FLAVOR.get(b.type, ["Resolved."]))
                 console.print(f"  [green]✓ {b.message}[/green]")
                 console.print(f"    [dim italic]{flavor}[/dim italic]")
 
         if delta.added_blockers:
             for b in delta.added_blockers:
-                flavor = _pick(_ADDED_FLAVOR.get(b.type, ["A new concern."]))
+                flavor = random.choice(_ADDED_FLAVOR.get(b.type, ["A new concern."]))
                 console.print(f"  [red]+ {b.message}[/red]")
                 console.print(f"    [dim italic]{flavor}[/dim italic]")
 
@@ -549,11 +650,11 @@ def snapshot(
         threads_resolved = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.removed_blockers)
         threads_added = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.added_blockers)
         if threads_resolved and not threads_added:
-            console.print(f"\n[dim italic]{_pick(_BUNBUN_THREADS_RESOLVED)}[/dim italic]")
+            console.print(f"\n[dim italic]{random.choice(_BUNBUN_THREADS_RESOLVED)}[/dim italic]")
         elif threads_added:
-            console.print(f"\n[dim italic]{_pick(_BUNBUN_THREADS_ADDED)}[/dim italic]")
+            console.print(f"\n[dim italic]{random.choice(_BUNBUN_THREADS_ADDED)}[/dim italic]")
     else:
-        console.print(f"\n[dim]{_pick(_FIRST_SNAPSHOT)}[/dim]")
+        console.print(f"\n[dim]{random.choice(_FIRST_SNAPSHOT)}[/dim]")
 
     # Current Blockers Table
     table = Table(title=f"Live Blockers for PR #{pr} (Ze Blocker Set)", show_header=True)
@@ -563,7 +664,7 @@ def snapshot(
     table.add_column("Message")
 
     local_blockers_count = 0
-    for b in snapshot.blockers:
+    for b in snap.blockers:
         if b.type in [BlockerType.LOCAL_UNCOMMITTED, BlockerType.LOCAL_UNPUSHED]:
             local_blockers_count += 1
 
@@ -581,23 +682,20 @@ def snapshot(
     console.print(table)
 
     if local_blockers_count > 0:
-        console.print(f"\n[bold yellow]⚠️  {_pick(_MID_MANEUVER_TITLE)}[/bold yellow]")
-        console.print(f"[yellow]{_pick(_MID_MANEUVER_DETAIL)}[/yellow]")
+        console.print(f"\n[bold yellow]⚠️  {random.choice(_MID_MANEUVER_TITLE)}[/bold yellow]")
+        console.print(f"[yellow]{random.choice(_MID_MANEUVER_DETAIL)}[/yellow]")
 
     # The officers' club moment
     merge_ready = not (delta.added_blockers + delta.still_open_blockers)
     if merge_ready and delta.removed_blockers:
         console.print()
-        console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_SPECTACLES)}[/dim italic]")
-        console.print("[bold green]PhiedBach's Verdict: {verdict}[/bold green]".format(verdict=delta.verdict_display))
-        console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_REDBULL)}[/dim italic]")
+        console.print(f"[dim italic]{random.choice(_OFFICERS_CLUB_SPECTACLES)}[/dim italic]")
+        console.print("[bold green]PhiedBach's Verdict: {verdict}[/bold green]".format(verdict=_theatrical_verdict(delta)))
+        console.print(f"[dim italic]{random.choice(_OFFICERS_CLUB_REDBULL)}[/dim italic]")
         console.print()
-        console.print(f"[dim italic]{_pick(_SCENE_MERGE_READY)}[/dim italic]")
+        console.print(f"[dim italic]{random.choice(_SCENE_MERGE_READY)}[/dim italic]")
     else:
-        console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict_display}[/bold green]")
-
-from ..core.services.playback_service import PlaybackService
-from pathlib import Path
+        console.print(f"\n[bold green]PhiedBach's Verdict: {_theatrical_verdict(delta)}[/bold green]")
 
 @app.command()
 def playback(
@@ -619,29 +717,29 @@ def playback(
 
     baseline, current, delta = service.run_playback(playback_path)
 
-    console.print(f"🎬 [bold]{_pick(_PLAYBACK_OPENING).format(name=name)}[/bold]")
+    console.print(f"🎬 [bold]{random.choice(_PLAYBACK_OPENING).format(name=name)}[/bold]")
 
     # Show Delta
     if baseline:
         console.print(f"\n[bold]Ze Delta against {baseline.timestamp}:[/bold]")
         if delta.head_changed:
             console.print("  [yellow]{msg}[/yellow]".format(
-                msg=_pick(_PLAYBACK_SHA_CHANGED).format(old=baseline.head_sha[:7], new=current.head_sha[:7])
+                msg=random.choice(_PLAYBACK_SHA_CHANGED).format(old=baseline.head_sha[:7], new=current.head_sha[:7])
             ))
 
         if delta.removed_blockers:
             for b in delta.removed_blockers:
-                flavor = _pick(_RESOLVED_FLAVOR.get(b.type, ["Resolved."]))
+                flavor = random.choice(_RESOLVED_FLAVOR.get(b.type, ["Resolved."]))
                 console.print(f"  [green]✓ {b.message}[/green]")
                 console.print(f"    [dim italic]{flavor}[/dim italic]")
 
         if delta.added_blockers:
             for b in delta.added_blockers:
-                flavor = _pick(_ADDED_FLAVOR.get(b.type, ["A new concern."]))
+                flavor = random.choice(_ADDED_FLAVOR.get(b.type, ["A new concern."]))
                 console.print(f"  [red]+ {b.message}[/red]")
                 console.print(f"    [dim italic]{flavor}[/dim italic]")
     else:
-        console.print(f"\n[dim]{_pick(_PLAYBACK_NO_BASELINE)}[/dim]")
+        console.print(f"\n[dim]{random.choice(_PLAYBACK_NO_BASELINE)}[/dim]")
 
     # Current Blockers Table
     table = Table(title=f"Current Blockers (Playback: {name})", show_header=True)
@@ -654,7 +752,7 @@ def playback(
         table.add_row(b.type.value, b.severity.value, b.message, style=severity_style if b.severity == BlockerSeverity.BLOCKER else None)
 
     console.print(table)
-    console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict_display}[/bold green]")
+    console.print(f"\n[bold green]PhiedBach's Verdict: {_theatrical_verdict(delta)}[/bold green]")
 
 @app.command()
 def export(
@@ -671,7 +769,7 @@ def export(
     metadata = github.get_pr_metadata(pr)
 
     # Capture recent git log for context
-    git_log = subprocess.run(["git", "log", "-n", "10", "--oneline"], capture_output=True, text=True).stdout
+    git_log = subprocess.run(["git", "log", "-n", "10", "--oneline"], capture_output=True, text=True, timeout=30).stdout
 
     repro_bundle = {
         "repo": repo,
@@ -685,12 +783,10 @@ def export(
     with open(out_path, "w") as f:
         json.dump(repro_bundle, f, indent=2)
 
-    console.print(f"📦 [bold green]{_pick(_EXPORT_COMPLETE)}[/bold green]")
-    console.print(_pick(_EXPORT_SAVED).format(path=out_path))
+    console.print(f"📦 [bold green]{random.choice(_EXPORT_COMPLETE)}[/bold green]")
+    console.print(random.choice(_EXPORT_SAVED).format(path=Path(out_path).resolve()))
     console.print()
-    console.print(f"[dim italic]{_pick(_SCENE_EXPORT)}[/dim italic]")
-
-import time
+    console.print(f"[dim italic]{random.choice(_SCENE_EXPORT)}[/dim italic]")
 
 @app.command()
 def watch(
@@ -701,13 +797,13 @@ def watch(
     """PhiedBach's Radar: Live monitoring of PR state."""
     repo, repo_owner, repo_name, pr = resolve_repo_context(repo, pr)
 
-    console.print(f"📡 [bold]{_pick(_WATCH_OPENING).format(repo=repo, pr=pr)}[/bold]")
-    console.print(f"[dim]{_pick(_WATCH_INTERVAL).format(interval=interval)}[/dim]")
+    console.print(f"📡 [bold]{random.choice(_WATCH_OPENING).format(repo=repo, pr=pr)}[/bold]")
+    console.print(f"[dim]{random.choice(_WATCH_INTERVAL).format(interval=interval)}[/dim]")
 
     github = GhCliAdapter(repo_owner=repo_owner, repo_name=repo_name)
     storage = JSONLStorageAdapter()
     engine = DeltaEngine()
-    service = RecorderService(github, storage, engine)
+    service = RecorderService(github, storage, engine, git=GitAdapter())
 
     quiet_polls = 0
 
@@ -724,18 +820,18 @@ def watch(
 
                 if delta.head_changed:
                     console.print("  [yellow]{msg}[/yellow]".format(
-                        msg=_pick(_WATCH_SHA_CHANGED).format(sha=snapshot.head_sha[:7])
+                        msg=random.choice(_WATCH_SHA_CHANGED).format(sha=snapshot.head_sha[:7])
                     ))
 
                 if delta.removed_blockers:
                     for b in delta.removed_blockers:
-                        flavor = _pick(_RESOLVED_FLAVOR.get(b.type, ["Resolved."]))
+                        flavor = random.choice(_RESOLVED_FLAVOR.get(b.type, ["Resolved."]))
                         console.print(f"  [green]✓ {b.message}[/green]")
                         console.print(f"    [dim italic]{flavor}[/dim italic]")
 
                 if delta.added_blockers:
                     for b in delta.added_blockers:
-                        flavor = _pick(_ADDED_FLAVOR.get(b.type, ["A new concern."]))
+                        flavor = random.choice(_ADDED_FLAVOR.get(b.type, ["A new concern."]))
                         console.print(f"  [red]+ {b.message}[/red]")
                         console.print(f"    [dim italic]{flavor}[/dim italic]")
 
@@ -743,40 +839,40 @@ def watch(
                 threads_resolved = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.removed_blockers)
                 threads_added = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.added_blockers)
                 if threads_resolved and not threads_added:
-                    console.print(f"[dim italic]{_pick(_BUNBUN_THREADS_RESOLVED)}[/dim italic]")
+                    console.print(f"[dim italic]{random.choice(_BUNBUN_THREADS_RESOLVED)}[/dim italic]")
                 elif threads_added:
-                    console.print(f"[dim italic]{_pick(_BUNBUN_THREADS_ADDED)}[/dim italic]")
+                    console.print(f"[dim italic]{random.choice(_BUNBUN_THREADS_ADDED)}[/dim italic]")
 
                 # The officers' club — merge-ready mid-patrol
                 merge_ready = not (delta.added_blockers + delta.still_open_blockers)
                 if merge_ready and delta.removed_blockers:
                     console.print()
-                    console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_SPECTACLES)}[/dim italic]")
-                    console.print(f"[bold green]Verdict: {delta.verdict_display}[/bold green]")
-                    console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_REDBULL)}[/dim italic]")
+                    console.print(f"[dim italic]{random.choice(_OFFICERS_CLUB_SPECTACLES)}[/dim italic]")
+                    console.print(f"[bold green]Verdict: {_theatrical_verdict(delta)}[/bold green]")
+                    console.print(f"[dim italic]{random.choice(_OFFICERS_CLUB_REDBULL)}[/dim italic]")
                     console.print()
-                    console.print(f"[dim italic]{_pick(_SCENE_MERGE_READY)}[/dim italic]")
+                    console.print(f"[dim italic]{random.choice(_SCENE_MERGE_READY)}[/dim italic]")
                 else:
-                    console.print(f"[bold green]Verdict: {delta.verdict_display}[/bold green]")
+                    console.print(f"[bold green]Verdict: {_theatrical_verdict(delta)}[/bold green]")
 
                 # Mid-maneuver warning
                 local_issues = [b for b in snapshot.blockers if b.type in [BlockerType.LOCAL_UNCOMMITTED, BlockerType.LOCAL_UNPUSHED]]
                 if local_issues:
                     console.print("[yellow]⚠️  {msg}[/yellow]".format(
-                        msg=_pick(_WATCH_MID_MANEUVER).format(n=len(local_issues))
+                        msg=random.choice(_WATCH_MID_MANEUVER).format(n=len(local_issues))
                     ))
 
             else:
                 quiet_polls += 1
                 if quiet_polls % 3 == 0:
-                    console.print(f"\n[dim italic]{_pick(_QUIET_SKIES)} ({snapshot.timestamp.strftime('%H:%M:%S')})[/dim italic]")
+                    console.print(f"\n[dim italic]{random.choice(_QUIET_SKIES)} ({snapshot.timestamp.strftime('%H:%M:%S')})[/dim italic]")
 
             time.sleep(interval)
     except KeyboardInterrupt:
-        console.print(f"\n[dim italic]{_pick(_WATCH_EXIT_1)}[/dim italic]")
-        console.print(f"[bold red]{_pick(_WATCH_EXIT_2)}[/bold red]")
+        console.print(f"\n[dim italic]{random.choice(_WATCH_EXIT_1)}[/dim italic]")
+        console.print(f"[bold red]{random.choice(_WATCH_EXIT_2)}[/bold red]")
         console.print()
-        console.print(f"[dim italic]{_pick(_SCENE_WATCH_EXIT)}[/dim italic]")
+        console.print(f"[dim italic]{random.choice(_SCENE_WATCH_EXIT)}[/dim italic]")
 
 if __name__ == "__main__":
     app()

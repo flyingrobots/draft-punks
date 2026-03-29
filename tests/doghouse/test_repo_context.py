@@ -47,10 +47,11 @@ def test_resolve_auto_detects_pr_only(mock_detect):
 
 
 def test_all_commands_share_resolve_repo_context():
-    """Verify that snapshot, watch, and export all call resolve_repo_context.
+    """Structural assertion: snapshot, watch, and export must call resolve_repo_context.
 
-    We inspect the source of each command function to confirm they use
-    the centralized helper rather than ad-hoc parsing.
+    This is a source-inspection guard, not a behavioral test.  It catches
+    regressions where a new command bypasses the centralized helper.  It will
+    break if the function is renamed — that's intentional (update both).
     """
     import inspect
     from doghouse.cli import main

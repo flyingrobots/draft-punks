@@ -1,14 +1,16 @@
 import datetime
-from dataclasses import dataclass, field, asdict
-from typing import List, Dict, Any, Optional
+from dataclasses import dataclass, field
+from typing import Any
+
 from .blocker import Blocker, BlockerType, BlockerSeverity
+
 
 @dataclass(frozen=True)
 class Snapshot:
     timestamp: datetime.datetime
     head_sha: str
-    blockers: List[Blocker]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    blockers: list[Blocker]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         # Ensure immutability by copying input lists/dicts
@@ -32,7 +34,7 @@ class Snapshot:
             return False
         return self.blocker_signature() == other.blocker_signature()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert the snapshot to a dictionary for serialization."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -51,7 +53,7 @@ class Snapshot:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Snapshot":
+    def from_dict(cls, data: dict[str, Any]) -> "Snapshot":
         """Reconstruct a snapshot from a dictionary."""
         return cls(
             timestamp=datetime.datetime.fromisoformat(data["timestamp"]),

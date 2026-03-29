@@ -4,10 +4,10 @@ version = "0.1.0"
 description = "CLI to wrangle CodeRabbit reviews into a humane TDD flow"
 authors = [{name = "Draft Punks"}]
 requires-python = ">=3.11"
-dependencies = ["typer>=0.12", "rich>=13.7", "textual>=0.44", "requests>=2.31"]
+dependencies = ["typer>=0.12", "rich>=13.7"]
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
-keywords = ["tui", "cli", "github", "codereview", "coderabbit", "llm", "automation"]
+keywords = ["cli", "github", "codereview", "coderabbit", "llm", "automation"]
 classifiers = [
   "Environment :: Console",
   "Intended Audience :: Developers",
@@ -29,12 +29,12 @@ minversion = "7.0"
 addopts = "-q"
 
 [project.optional-dependencies]
- dev = [
+dev = [
   "pytest>=7",
- ]
+]
 
 [project.scripts]
- doghouse = "doghouse.cli.main:app"
+doghouse = "doghouse.cli.main:app"
 
 [build-system]
 requires = ["hatchling>=1.21"]

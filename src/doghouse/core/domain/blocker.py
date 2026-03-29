@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Dict, Any, List
+from typing import Any
+
 
 class BlockerType(Enum):
     UNRESOLVED_THREAD = "unresolved_thread"
@@ -13,10 +14,17 @@ class BlockerType(Enum):
     LOCAL_UNPUSHED = "local_unpushed"
     OTHER = "other"
 
+
 class BlockerSeverity(Enum):
-    BLOCKER = "blocker"  # Must be fixed to merge
-    WARNING = "warning"  # Should be fixed, but not strictly blocking
-    INFO = "info"       # Informational
+    INFO = "info"
+    WARNING = "warning"
+    BLOCKER = "blocker"
+
+    @property
+    def rank(self) -> int:
+        """Numeric rank for severity comparison. Higher = more severe."""
+        return {"info": 0, "warning": 1, "blocker": 2}[self.value]
+
 
 @dataclass(frozen=True)
 class Blocker:
@@ -25,4 +33,8 @@ class Blocker:
     message: str
     severity: BlockerSeverity = BlockerSeverity.BLOCKER
     is_primary: bool = True  # If False, this is a secondary/dependent blocker
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        # Defensive copy so callers can't mutate our metadata
+        object.__setattr__(self, 'metadata', dict(self.metadata))

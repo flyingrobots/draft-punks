@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [ main, feat/doghouse-reboot ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 permissions:
   contents: read
-  pull-requests: write
+  pull-requests: read
 
 jobs:
 

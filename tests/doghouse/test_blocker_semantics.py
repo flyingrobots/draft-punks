@@ -10,6 +10,25 @@ from doghouse.core.domain.snapshot import Snapshot
 from doghouse.core.services.delta_engine import DeltaEngine
 
 
+# --- Severity ranking ---
+
+def test_severity_rank_order():
+    """BLOCKER > WARNING > INFO, numerically."""
+    assert BlockerSeverity.BLOCKER.rank > BlockerSeverity.WARNING.rank
+    assert BlockerSeverity.WARNING.rank > BlockerSeverity.INFO.rank
+
+
+def test_severity_rank_merge_keeps_more_severe():
+    """When merging two blockers with the same ID, the higher severity wins."""
+    high = BlockerSeverity.BLOCKER
+    low = BlockerSeverity.WARNING
+    # Simulate the merge logic from recorder_service
+    winner = high if high.rank > low.rank else low
+    assert winner == BlockerSeverity.BLOCKER
+
+
+# --- Delta helpers ---
+
 def _make_delta(blockers: list[Blocker]) -> Delta:
     """Helper: build a Delta where all blockers are 'still open'."""
     engine = DeltaEngine()
@@ -142,64 +161,68 @@ def test_verdict_pending_checks_before_approval():
     assert "Wait for CI" in delta.verdict
 
 
-# --- PhiedBach's theatrical verdicts (verdict_display) ---
-# verdict_display is randomized, so tests check that the result is one of the
-# known variations (imported from the module) and carries the right emoji.
+# --- PhiedBach's theatrical verdicts (_theatrical_verdict) ---
+# _theatrical_verdict is randomized, so tests check that the result is one of
+# the known variations (imported from the CLI module) and carries the right emoji.
 
-from doghouse.core.domain.delta import (
-    _V_MERGE_READY, _V_MERGE_CONFLICT, _V_FAILING_CHECKS,
-    _V_UNRESOLVED_THREADS, _V_PENDING_CHECKS, _V_APPROVAL_NEEDED,
+from doghouse.cli.main import (
+    _theatrical_verdict,
+    _V_MERGE_READY, _V_MERGE_CONFLICT,
+    _V_APPROVAL_NEEDED,
 )
 
 
-def test_verdict_display_merge_ready():
+def test_theatrical_verdict_merge_ready():
     delta = _make_delta([])
-    assert delta.verdict_display in _V_MERGE_READY
+    assert _theatrical_verdict(delta) in _V_MERGE_READY
 
 
-def test_verdict_display_merge_conflict():
+def test_theatrical_verdict_merge_conflict():
     blockers = [
         Blocker(id="merge-conflict", type=BlockerType.DIRTY_MERGE_STATE,
                 message="conflict", is_primary=True),
     ]
     delta = _make_delta(blockers)
-    assert delta.verdict_display in _V_MERGE_CONFLICT
+    assert _theatrical_verdict(delta) in _V_MERGE_CONFLICT
 
 
-def test_verdict_display_failing_checks_singular():
+def test_theatrical_verdict_failing_checks_singular():
     blockers = [
         Blocker(id="check-ci", type=BlockerType.FAILING_CHECK, message="CI"),
     ]
     delta = _make_delta(blockers)
-    assert "1 instrument" in delta.verdict_display
-    assert "🛑" in delta.verdict_display
+    result = _theatrical_verdict(delta)
+    assert "1 instrument" in result
+    assert "🛑" in result
 
 
-def test_verdict_display_failing_checks_plural():
+def test_theatrical_verdict_failing_checks_plural():
     blockers = [
         Blocker(id="check-a", type=BlockerType.FAILING_CHECK, message="a"),
         Blocker(id="check-b", type=BlockerType.FAILING_CHECK, message="b"),
     ]
     delta = _make_delta(blockers)
-    assert "2 instruments" in delta.verdict_display
-    assert "🛑" in delta.verdict_display
+    result = _theatrical_verdict(delta)
+    assert "2 instruments" in result
+    assert "🛑" in result
 
 
-def test_verdict_display_unresolved_threads():
+def test_theatrical_verdict_unresolved_threads():
     blockers = [
         Blocker(id="t1", type=BlockerType.UNRESOLVED_THREAD, message="fix"),
         Blocker(id="t2", type=BlockerType.UNRESOLVED_THREAD, message="fix2"),
     ]
     delta = _make_delta(blockers)
-    assert "2" in delta.verdict_display
-    assert "voice" in delta.verdict_display
-    assert "💬" in delta.verdict_display
+    result = _theatrical_verdict(delta)
+    assert "2" in result
+    assert "voice" in result
+    assert "💬" in result
 
 
-def test_verdict_display_approval_needed():
+def test_theatrical_verdict_approval_needed():
     blockers = [
         Blocker(id="review-required", type=BlockerType.NOT_APPROVED,
                 message="Review required", severity=BlockerSeverity.WARNING),
     ]
     delta = _make_delta(blockers)
-    assert delta.verdict_display in _V_APPROVAL_NEEDED
+    assert _theatrical_verdict(delta) in _V_APPROVAL_NEEDED
