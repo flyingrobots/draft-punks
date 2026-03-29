@@ -36,24 +36,17 @@ All notable changes to this project will be documented in this file.
 - **Blocker Metadata Copy**: `Blocker.__post_init__` now defensively copies `metadata` dict.
 - **Domain Purity**: `verdict_display` and all randomized variation lists moved from domain layer to CLI presentation layer.
 - **Unused Dependencies**: Removed `requests` and `textual` from `pyproject.toml`.
-- **CI Permissions**: Reduced `pull-requests: write` to `read`; removed feature branch from push trigger.
-- **Unused Imports**: Cleaned up across `blocker.py`, `delta.py`, `snapshot.py`, `jsonl_adapter.py`, `delta_engine.py`.
-- **Modern Type Syntax**: Replaced `typing.List`/`Dict`/`Optional` with built-in `list`/`dict`/`X | None` across all modified files.
-- **Missing Import**: Added `Blocker` import to `recorder_service.py` (blocker merge would have crashed at runtime).
-- **CI/CD Security**: Added top-level permissions to workflows and expanded branch scope.
-- **Publishing Hygiene**: Refined tag patterns and split build/publish steps.
-- **Core Immutability**: Ensure Snapshot and Blocker objects own immutable copies of data.
-- **Deterministic Delta**: Sorted blocker IDs to ensure stable output across runs.
-- **Error Handling**: Hardened subprocess calls with timeouts and missing-upstream detection.
-- **Import Paths**: Fixed packaging bugs identified via recursive dogfooding.
-- **Docs Drift**: Archived legacy Draft Punks TUI documentation to clear confusion.
+- **CI/CD Hardening**: Scoped `id-token:write` to publish job only; added job timeouts and `fail-fast: false`; pinned hatch; reduced `pull-requests` to read; tightened tag pattern.
+- **Code Hygiene**: Removed unused imports across domain and adapter modules; modernized type annotations to `list`/`dict`/`X | None` syntax; added `Blocker` import to `recorder_service.py`.
+- **Core Immutability**: Snapshot and Blocker objects own defensive copies of mutable data.
+- **Deterministic Delta**: Sorted blocker IDs for stable output across runs.
+- **Docs Drift**: Archived legacy TUI documentation; brought PRODUCTION_LOG incidents into template compliance.
 
 ### Tests
 
-- Added blocker-semantics tests (review/thread interaction, verdict priority chain).
-- Added repo-context consistency tests (all commands use `resolve_repo_context`).
-- Added watch persistence tests (dedup on identical polls, persist on meaningful change).
-- Added snapshot equivalence tests.
-- Added packaging smoke tests (readme path, metadata, entry point).
-- Added severity rank ordering tests.
-- Added theatrical verdict tests (now testing CLI-layer `_theatrical_verdict`).
+- Covers blocker-semantics interactions (review/thread, verdict priority chain, severity ranking).
+- Verifies repo-context consistency (all commands use `resolve_repo_context`).
+- Pins watch persistence behavior (dedup on identical polls, persist on meaningful change).
+- Validates snapshot equivalence and blocker signature.
+- Includes packaging smoke tests (readme path, metadata, entry point).
+- Exercises theatrical verdict variations from CLI presentation layer.

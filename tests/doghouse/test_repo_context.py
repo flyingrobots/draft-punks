@@ -23,6 +23,15 @@ def test_resolve_parses_owner_name_from_repo_string():
     assert name == "widgets"
 
 
+def test_resolve_handles_repo_without_slash():
+    """When repo has no slash, both owner and name become the same string."""
+    repo, owner, name, pr = resolve_repo_context("widgets", 7)
+    assert repo == "widgets"
+    assert owner == "widgets"
+    assert name == "widgets"
+    assert pr == 7
+
+
 @patch("doghouse.cli.main._auto_detect_repo_and_pr")
 def test_resolve_auto_detects_when_repo_missing(mock_detect):
     """When --repo is not provided, auto-detection fills it in."""
