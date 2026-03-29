@@ -121,14 +121,25 @@ class GhCliAdapter(GitHubPort):
                     ))
 
         # 4. Review Decision
+        # reviewDecision is sticky: CHANGES_REQUESTED persists until the
+        # reviewer explicitly re-approves, even after all threads are resolved.
+        # Unresolved threads are the real live blockers; the formal approval
+        # state is a separate, lower-priority signal.
+        has_unresolved_threads = any(
+            b.type == BlockerType.UNRESOLVED_THREAD for b in blockers
+        )
         decision = data.get("reviewDecision")
         if decision == "CHANGES_REQUESTED":
-            blockers.append(Blocker(
-                id="review-changes-requested",
-                type=BlockerType.NOT_APPROVED,
-                message="Reviewer requested changes",
-                severity=BlockerSeverity.BLOCKER
-            ))
+            if not has_unresolved_threads:
+                # Threads resolved but reviewer hasn't re-approved yet
+                blockers.append(Blocker(
+                    id="review-changes-requested",
+                    type=BlockerType.NOT_APPROVED,
+                    message="Re-approval needed (changes were requested, threads resolved)",
+                    severity=BlockerSeverity.WARNING
+                ))
+            # When unresolved threads exist, they already represent the real
+            # work — don't double-count with a redundant approval blocker.
         elif decision == "REVIEW_REQUIRED":
             blockers.append(Blocker(
                 id="review-required",

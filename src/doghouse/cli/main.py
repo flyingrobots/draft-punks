@@ -15,21 +15,38 @@ from ..core.domain.blocker import BlockerSeverity, BlockerType
 app = typer.Typer(help="Doghouse: The PR Flight Recorder")
 console = Console()
 
-def get_current_repo_and_pr() -> tuple[str, int]:
-    """Auto-detect current repo and PR from context."""
+def _auto_detect_repo_and_pr() -> tuple[str, int]:
+    """Auto-detect current repo and PR from local git/gh context."""
     try:
-        # Detect repo
-        repo_res = subprocess.run(["gh", "repo", "view", "--json", "name,owner"], capture_output=True, text=True, check=True)
+        repo_res = subprocess.run(["gh", "repo", "view", "--json", "name,owner"], capture_output=True, text=True, check=True, timeout=30)
         repo_data = json.loads(repo_res.stdout)
         repo_full_name = f"{repo_data['owner']['login']}/{repo_data['name']}"
 
-        # Detect current PR (branch-based)
-        pr_res = subprocess.run(["gh", "pr", "view", "--json", "number"], capture_output=True, text=True, check=True)
+        pr_res = subprocess.run(["gh", "pr", "view", "--json", "number"], capture_output=True, text=True, check=True, timeout=30)
         pr_data = json.loads(pr_res.stdout)
         return repo_full_name, int(pr_data["number"])
     except Exception as e:
         console.print(f"[red]Error: Could not detect PR context: {e}[/red]")
         sys.exit(1)
+
+
+def resolve_repo_context(
+    repo: Optional[str], pr: Optional[int]
+) -> tuple[str, str, str, int]:
+    """Resolve repo and PR from explicit args or auto-detection.
+
+    Returns (repo_full, repo_owner, repo_name, pr_number).
+    """
+    if not repo or not pr:
+        detected_repo, detected_pr = _auto_detect_repo_and_pr()
+        repo = repo or detected_repo
+        pr = pr or detected_pr
+
+    if "/" in repo:
+        owner, name = repo.split("/", 1)
+    else:
+        owner, name = repo, repo
+    return repo, owner, name, pr
 
 @app.command()
 def snapshot(
@@ -38,16 +55,7 @@ def snapshot(
     as_json: bool = typer.Option(False, "--json", help="Output machine-readable JSON")
 ):
     """Capture a snapshot of the current PR state and show the delta."""
-    repo_owner, repo_name = None, None
-    if repo and "/" in repo:
-        repo_owner, repo_name = repo.split("/", 1)
-
-    if not repo or not pr:
-        detected_repo, detected_pr = get_current_repo_and_pr()
-        repo = repo or detected_repo
-        pr = pr or detected_pr
-        if not repo_owner and repo and "/" in repo:
-            repo_owner, repo_name = repo.split("/", 1)
+    repo, repo_owner, repo_name, pr = resolve_repo_context(repo, pr)
 
     github = GhCliAdapter(repo_owner=repo_owner, repo_name=repo_name)
     storage = JSONLStorageAdapter()
@@ -185,15 +193,12 @@ def export(
     repo: Optional[str] = typer.Option(None, "--repo", help="Repository (owner/name)")
 ):
     """Bundle PR history and metadata into a black box repro file."""
-    if not repo or not pr:
-        detected_repo, detected_pr = get_current_repo_and_pr()
-        repo = repo or detected_repo
-        pr = pr or detected_pr
+    repo, repo_owner, repo_name, pr = resolve_repo_context(repo, pr)
 
     storage = JSONLStorageAdapter()
     snapshots = storage.list_snapshots(repo, pr)
 
-    github = GhCliAdapter()
+    github = GhCliAdapter(repo_owner=repo_owner, repo_name=repo_name)
     metadata = github.get_pr_metadata(pr)
 
     # Capture recent git log for context
@@ -223,15 +228,12 @@ def watch(
     interval: int = typer.Option(180, "--interval", help="Polling interval in seconds")
 ):
     """PhiedBach's Radar: Live monitoring of PR state."""
-    if not repo or not pr:
-        detected_repo, detected_pr = get_current_repo_and_pr()
-        repo = repo or detected_repo
-        pr = pr or detected_pr
+    repo, repo_owner, repo_name, pr = resolve_repo_context(repo, pr)
 
     console.print(f"📡 [bold]PhiedBach raises his radar dish... Monitoring {repo} PR #{pr}...[/bold]")
     console.print(f"[dim]Interval: {interval} seconds. Ctrl+C to stop dogfighting.[/dim]")
 
-    github = GhCliAdapter()
+    github = GhCliAdapter(repo_owner=repo_owner, repo_name=repo_name)
     storage = JSONLStorageAdapter()
     engine = DeltaEngine()
     service = RecorderService(github, storage, engine)

@@ -15,6 +15,23 @@ class Snapshot:
         object.__setattr__(self, 'blockers', list(self.blockers))
         object.__setattr__(self, 'metadata', dict(self.metadata))
 
+    def blocker_signature(self) -> frozenset:
+        """Stable signature of blocker state for equivalence comparison.
+
+        Two snapshots with the same head_sha and blocker_signature represent
+        the same meaningful PR state — a repeated poll, not a new sortie.
+        """
+        return frozenset(
+            (b.id, b.type.value, b.severity.value, b.is_primary)
+            for b in self.blockers
+        )
+
+    def is_equivalent_to(self, other: "Snapshot") -> bool:
+        """True if this snapshot represents the same meaningful PR state."""
+        if self.head_sha != other.head_sha:
+            return False
+        return self.blocker_signature() == other.blocker_signature()
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert the snapshot to a dictionary for serialization."""
         return {

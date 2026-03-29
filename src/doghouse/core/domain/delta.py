@@ -32,13 +32,10 @@ class Delta:
         if not all_current:
             return "Merge ready! All blockers resolved. 🎉"
 
-        # Priority 0: Primary Blockers (e.g. Merge Conflicts)
-        primary = [b for b in all_current if b.is_primary and b.severity == BlockerSeverity.BLOCKER]
-        if primary:
-            # If multiple primary, focus on the first one or summarized
-            if any(b.type == BlockerType.DIRTY_MERGE_STATE for b in primary):
-                return "Resolve merge conflicts first! ⚔️"
-            return f"Fix primary blockers: {len(primary)} items. 🛑"
+        # Priority 0: Merge conflicts
+        conflicts = [b for b in all_current if b.type == BlockerType.DIRTY_MERGE_STATE]
+        if conflicts:
+            return "Resolve merge conflicts first! ⚔️"
 
         # Priority 1: Failing checks
         failing = [b for b in all_current if b.type == BlockerType.FAILING_CHECK]
@@ -54,6 +51,11 @@ class Delta:
         pending = [b for b in all_current if b.type == BlockerType.PENDING_CHECK]
         if pending:
             return "Wait for CI to complete. ⏳"
+
+        # Priority 4: Formal approval required
+        approval = [b for b in all_current if b.type == BlockerType.NOT_APPROVED]
+        if approval:
+            return "Approval needed before merge. 📋"
 
         # Default: general blockers
         return f"Resolve remaining blockers: {len(all_current)} items. 🚧"

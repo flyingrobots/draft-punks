@@ -1,5 +1,6 @@
 import datetime
 from typing import Optional, List, Tuple
+from ..domain.blocker import Blocker
 from ..domain.snapshot import Snapshot
 from ..domain.delta import Delta
 from ..ports.github_port import GitHubPort
@@ -64,7 +65,10 @@ class RecorderService:
         # 3. Compute delta
         delta = self.delta_engine.compute_delta(baseline, current_snapshot)
 
-        # 4. Persist
-        self.storage.save_snapshot(repo, pr_id, current_snapshot)
+        # 4. Persist only if the state meaningfully changed.
+        # A sortie is a meaningful review episode, not a heartbeat.
+        # Identical polls (same head SHA, same blocker set) are not sorties.
+        if baseline is None or not current_snapshot.is_equivalent_to(baseline):
+            self.storage.save_snapshot(repo, pr_id, current_snapshot)
 
         return current_snapshot, delta
