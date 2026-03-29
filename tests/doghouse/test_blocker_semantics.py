@@ -140,3 +140,56 @@ def test_verdict_pending_checks_before_approval():
     ]
     delta = _make_delta(blockers)
     assert "Wait for CI" in delta.verdict
+
+
+# --- PhiedBach's theatrical verdicts (verdict_display) ---
+
+def test_verdict_display_merge_ready():
+    delta = _make_delta([])
+    assert "Ze orchestra is in tune" in delta.verdict_display
+    assert "mein Freund" in delta.verdict_display
+
+
+def test_verdict_display_merge_conflict():
+    blockers = [
+        Blocker(id="merge-conflict", type=BlockerType.DIRTY_MERGE_STATE,
+                message="conflict", is_primary=True),
+    ]
+    delta = _make_delta(blockers)
+    assert "terrible knot" in delta.verdict_display
+
+
+def test_verdict_display_failing_checks_singular():
+    blockers = [
+        Blocker(id="check-ci", type=BlockerType.FAILING_CHECK, message="CI"),
+    ]
+    delta = _make_delta(blockers)
+    assert "1 instrument is out of tune" in delta.verdict_display
+
+
+def test_verdict_display_failing_checks_plural():
+    blockers = [
+        Blocker(id="check-a", type=BlockerType.FAILING_CHECK, message="a"),
+        Blocker(id="check-b", type=BlockerType.FAILING_CHECK, message="b"),
+    ]
+    delta = _make_delta(blockers)
+    assert "2 instruments are out of tune" in delta.verdict_display
+
+
+def test_verdict_display_unresolved_threads():
+    blockers = [
+        Blocker(id="t1", type=BlockerType.UNRESOLVED_THREAD, message="fix"),
+        Blocker(id="t2", type=BlockerType.UNRESOLVED_THREAD, message="fix2"),
+    ]
+    delta = _make_delta(blockers)
+    assert "2 voices remain unanswered" in delta.verdict_display
+
+
+def test_verdict_display_approval_needed():
+    blockers = [
+        Blocker(id="review-required", type=BlockerType.NOT_APPROVED,
+                message="Review required", severity=BlockerSeverity.WARNING),
+    ]
+    delta = _make_delta(blockers)
+    assert "Ze conductor" in delta.verdict_display
+    assert "blessing" in delta.verdict_display

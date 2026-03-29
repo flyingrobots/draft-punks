@@ -15,6 +15,44 @@ from ..core.domain.blocker import BlockerSeverity, BlockerType
 app = typer.Typer(help="Doghouse: The PR Flight Recorder")
 console = Console()
 
+# ---------------------------------------------------------------------------
+# PhiedBach's commentary on blocker transitions.
+# Each resolved or added blocker gets a line that tells you *which instrument*
+# came into or fell out of tune — not a generic "Beautiful counterpoint!"
+# ---------------------------------------------------------------------------
+
+_RESOLVED_FLAVOR = {
+    BlockerType.UNRESOLVED_THREAD: "Ze reviewer lowers his baton — thread answered.",
+    BlockerType.FAILING_CHECK: "Ze CI has found its key! Check passing.",
+    BlockerType.PENDING_CHECK: "Ze stagehands have finished. Check complete.",
+    BlockerType.NOT_APPROVED: "Ze conductor nods — approval restored.",
+    BlockerType.DIRTY_MERGE_STATE: "Ze terrible knot is untangled! Conflict resolved.",
+    BlockerType.LOCAL_UNCOMMITTED: "Ze local score is clean once more.",
+    BlockerType.LOCAL_UNPUSHED: "Ze local und remote scores are back in harmony.",
+    BlockerType.CODERABBIT_STATE: "BunBun settles back into his chair.",
+    BlockerType.OTHER: "A minor discordance has been resolved.",
+}
+
+_ADDED_FLAVOR = {
+    BlockerType.UNRESOLVED_THREAD: "A new voice joins ze chorus, demanding an answer.",
+    BlockerType.FAILING_CHECK: "An instrument strikes a sour note!",
+    BlockerType.PENDING_CHECK: "Ze stagehands are still setting ze stage...",
+    BlockerType.NOT_APPROVED: "Ze conductor frowns und withholds his blessing.",
+    BlockerType.DIRTY_MERGE_STATE: "Ze scores have become terribly tangled!",
+    BlockerType.LOCAL_UNCOMMITTED: "Ze local score has unsaved notes!",
+    BlockerType.LOCAL_UNPUSHED: "Ze local score races ahead of ze orchestra.",
+    BlockerType.CODERABBIT_STATE: "BunBun stirs... something has changed.",
+    BlockerType.OTHER: "An unexpected note appears in ze margin.",
+}
+
+_QUIET_SKIES = [
+    "Quiet skies over ze trenches...",
+    "Snoopy scans ze horizon. Nothing stirs.",
+    "Ze Red Baron is elsewhere tonight.",
+    "BunBun sips his Red Bull. All is calm.",
+    "PhiedBach hums softly to himself...",
+]
+
 def _auto_detect_repo_and_pr() -> tuple[str, int]:
     """Auto-detect current repo and PR from local git/gh context."""
     try:
@@ -93,11 +131,23 @@ def snapshot(
 
         if delta.removed_blockers:
             for b in delta.removed_blockers:
-                console.print(f"  [green]✓ Resolved: {b.message} (Beautiful counterpoint!)[/green]")
+                flavor = _RESOLVED_FLAVOR.get(b.type, "Resolved.")
+                console.print(f"  [green]✓ {b.message}[/green]")
+                console.print(f"    [dim italic]{flavor}[/dim italic]")
 
         if delta.added_blockers:
             for b in delta.added_blockers:
-                console.print(f"  [red]+ New: {b.message} (A discordant note arrives!)[/red]")
+                flavor = _ADDED_FLAVOR.get(b.type, "A new concern.")
+                console.print(f"  [red]+ {b.message}[/red]")
+                console.print(f"    [dim italic]{flavor}[/dim italic]")
+
+        # BunBun reacts to review thread changes
+        threads_resolved = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.removed_blockers)
+        threads_added = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.added_blockers)
+        if threads_resolved and not threads_added:
+            console.print("\n[dim italic]BunBun reaches for a fresh Red Bull. His work here is done... for now.[/dim italic]")
+        elif threads_added:
+            console.print("\n[dim italic]BunBun's ears twitch. He sets down his Red Bull und turns to ze keyboard.[/dim italic]")
     else:
         console.print("\n[dim]First snapshot for this PR. Ze ledger is clean.[/dim]")
 
@@ -115,7 +165,6 @@ def snapshot(
 
         severity_style = "red" if b.severity == BlockerSeverity.BLOCKER else "yellow"
         impact_text = "Primary" if b.is_primary else "Secondary"
-        impact_style = "bold red" if b.is_primary else "dim"
 
         table.add_row(
             b.type.value,
@@ -131,7 +180,15 @@ def snapshot(
         console.print(f"\n[bold yellow]⚠️  PhiedBach warns: Ze flight recorder sees you are mid-maneuver![/bold yellow]")
         console.print("[yellow]Your local score does not match ze remote symphony! Push your changes to sync ze score.[/yellow]")
 
-    console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict}[/bold green]")
+    # The officers' club moment
+    merge_ready = not (delta.added_blockers + delta.still_open_blockers)
+    if merge_ready and delta.removed_blockers:
+        console.print()
+        console.print("[dim italic]PhiedBach removes his spectacles und folds them carefully.[/dim italic]")
+        console.print("[bold green]PhiedBach's Verdict: {verdict}[/bold green]".format(verdict=delta.verdict_display))
+        console.print("[dim italic]BunBun already has a Red Bull open.[/dim italic]")
+    else:
+        console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict_display}[/bold green]")
 
 from ..core.services.playback_service import PlaybackService
 from pathlib import Path
@@ -166,11 +223,15 @@ def playback(
 
         if delta.removed_blockers:
             for b in delta.removed_blockers:
-                console.print(f"  [green]✓ Resolved: {b.message} (Harmony is restored!)[/green]")
+                flavor = _RESOLVED_FLAVOR.get(b.type, "Resolved.")
+                console.print(f"  [green]✓ {b.message}[/green]")
+                console.print(f"    [dim italic]{flavor}[/dim italic]")
 
         if delta.added_blockers:
             for b in delta.added_blockers:
-                console.print(f"  [red]+ New: {b.message} (An unexpected dissonance!)[/red]")
+                flavor = _ADDED_FLAVOR.get(b.type, "A new concern.")
+                console.print(f"  [red]+ {b.message}[/red]")
+                console.print(f"    [dim italic]{flavor}[/dim italic]")
     else:
         console.print("\n[dim]No baseline for this playback score.[/dim]")
 
@@ -185,7 +246,7 @@ def playback(
         table.add_row(b.type.value, b.severity.value, b.message, style=severity_style if b.severity == BlockerSeverity.BLOCKER else None)
 
     console.print(table)
-    console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict}[/bold green]")
+    console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict_display}[/bold green]")
 
 @app.command()
 def export(
@@ -238,35 +299,67 @@ def watch(
     engine = DeltaEngine()
     service = RecorderService(github, storage, engine)
 
+    quiet_polls = 0
+
     try:
         while True:
             snapshot, delta = service.record_sortie(repo, pr)
 
-            # Only announce if something changed or it's the first run
-            if delta.baseline_sha or delta.added_blockers or delta.removed_blockers:
+            has_changes = delta.added_blockers or delta.removed_blockers or delta.head_changed
+            is_first_run = not delta.baseline_sha
+
+            if is_first_run or has_changes:
+                quiet_polls = 0
                 console.print(f"\n[bold blue]Radar Pulse: {snapshot.timestamp.strftime('%H:%M:%S')} 🎼[/bold blue]")
 
                 if delta.head_changed:
-                    console.print(f"  [yellow]SHA changed to {snapshot.head_sha[:7]}![/yellow]")
+                    console.print(f"  [yellow]SHA changed to {snapshot.head_sha[:7]}! A new movement begins.[/yellow]")
 
                 if delta.removed_blockers:
                     for b in delta.removed_blockers:
-                        console.print(f"  [green]✓ Resolved: {b.message}[/green]")
+                        flavor = _RESOLVED_FLAVOR.get(b.type, "Resolved.")
+                        console.print(f"  [green]✓ {b.message}[/green]")
+                        console.print(f"    [dim italic]{flavor}[/dim italic]")
 
                 if delta.added_blockers:
                     for b in delta.added_blockers:
-                        console.print(f"  [red]+ New: {b.message}[/red]")
+                        flavor = _ADDED_FLAVOR.get(b.type, "A new concern.")
+                        console.print(f"  [red]+ {b.message}[/red]")
+                        console.print(f"    [dim italic]{flavor}[/dim italic]")
 
-                console.print(f"[bold green]Verdict: {delta.verdict}[/bold green]")
+                # BunBun reacts to review thread changes
+                threads_resolved = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.removed_blockers)
+                threads_added = any(b.type == BlockerType.UNRESOLVED_THREAD for b in delta.added_blockers)
+                if threads_resolved and not threads_added:
+                    console.print("[dim italic]BunBun reaches for a fresh Red Bull. His work here is done... for now.[/dim italic]")
+                elif threads_added:
+                    console.print("[dim italic]BunBun's ears twitch. He sets down his Red Bull und turns to ze keyboard.[/dim italic]")
 
-                # Check for mid-maneuver
+                # The officers' club — merge-ready mid-patrol
+                merge_ready = not (delta.added_blockers + delta.still_open_blockers)
+                if merge_ready and delta.removed_blockers:
+                    console.print()
+                    console.print("[dim italic]PhiedBach removes his spectacles und folds them carefully.[/dim italic]")
+                    console.print(f"[bold green]Verdict: {delta.verdict_display}[/bold green]")
+                    console.print("[dim italic]BunBun already has a Red Bull open.[/dim italic]")
+                else:
+                    console.print(f"[bold green]Verdict: {delta.verdict_display}[/bold green]")
+
+                # Mid-maneuver warning
                 local_issues = [b for b in snapshot.blockers if b.type in [BlockerType.LOCAL_UNCOMMITTED, BlockerType.LOCAL_UNPUSHED]]
                 if local_issues:
-                     console.print(f"[yellow]⚠️  Radar sees you are mid-maneuver! {len(local_issues)} local issues.[/yellow]")
+                    console.print(f"[yellow]⚠️  Radar sees you are mid-maneuver! {len(local_issues)} local issues.[/yellow]")
+
+            else:
+                quiet_polls += 1
+                if quiet_polls % 3 == 0:
+                    msg = _QUIET_SKIES[quiet_polls // 3 % len(_QUIET_SKIES)]
+                    console.print(f"\n[dim italic]{msg} ({snapshot.timestamp.strftime('%H:%M:%S')})[/dim italic]")
 
             time.sleep(interval)
     except KeyboardInterrupt:
-        console.print("\n[bold red]Radar dish lowered. Rehearsal suspended.[/bold red]")
+        console.print("\n[dim italic]PhiedBach lowers his radar dish und closes ze ledger.[/dim italic]")
+        console.print("[bold red]Rehearsal suspended. Bis bald, mein Freund.[/bold red]")
 
 if __name__ == "__main__":
     app()

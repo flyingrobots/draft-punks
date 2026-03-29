@@ -59,3 +59,41 @@ class Delta:
 
         # Default: general blockers
         return f"Resolve remaining blockers: {len(all_current)} items. 🚧"
+
+    @property
+    def verdict_display(self) -> str:
+        """PhiedBach's theatrical verdict for human eyes."""
+        all_current = self.added_blockers + self.still_open_blockers
+        if not all_current:
+            return "Ze orchestra is in tune. You may merge, mein Freund. 🎼"
+
+        # Priority 0: Merge conflicts
+        if any(b.type == BlockerType.DIRTY_MERGE_STATE for b in all_current):
+            return "Ze score has a terrible knot! Resolve ze merge conflicts before anything else. ⚔️"
+
+        # Priority 1: Failing checks
+        failing = [b for b in all_current if b.type == BlockerType.FAILING_CHECK]
+        if failing:
+            n = len(failing)
+            noun = "instrument is" if n == 1 else "instruments are"
+            return f"{n} {noun} out of tune! Fix ze failing checks. 🛑"
+
+        # Priority 2: Unresolved threads
+        threads = [b for b in all_current if b.type == BlockerType.UNRESOLVED_THREAD]
+        if threads:
+            n = len(threads)
+            noun = "voice remains" if n == 1 else "voices remain"
+            return f"{n} {noun} unanswered. Address ze review feedback. 💬"
+
+        # Priority 3: Pending checks
+        if any(b.type == BlockerType.PENDING_CHECK for b in all_current):
+            return "Ze stagehands are still preparing. Vait for CI to finish. ⏳"
+
+        # Priority 4: Formal approval required
+        if any(b.type == BlockerType.NOT_APPROVED for b in all_current):
+            return "Ze conductor has not yet given his blessing. Approval is needed. 📋"
+
+        # Default
+        n = len(all_current)
+        noun = "item remains" if n == 1 else "items remain"
+        return f"{n} {noun} on ze music stand. Resolve zem before ze performance. 🚧"
