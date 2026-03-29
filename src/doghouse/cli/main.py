@@ -233,7 +233,7 @@ _OFFICERS_CLUB_SPECTACLES = [
     "PhiedBach sets down his quill und exhales slowly.",
     "PhiedBach closes ze great ledger vith a satisfied thump.",
     "PhiedBach straightens his powdered wig und smiles.",
-    "PhiedBach leans back in his wingback chair und closes his eyes.",
+    "PhiedBach hangs his flying goggles on ze nail by ze doghouse door.",
 ]
 
 _OFFICERS_CLUB_REDBULL = [
@@ -242,6 +242,116 @@ _OFFICERS_CLUB_REDBULL = [
     "BunBun's ears relax for ze first time today.",
     "BunBun thumps his hind leg — ze ceremony is complete.",
     "BunBun produces a tiny party horn from behind his ThinkPad.",
+]
+
+# ---------------------------------------------------------------------------
+# Closing scenes — narrative paragraphs set at the doghouse.
+# These are the chapter endings. 2-4 sentences of atmosphere.
+# ---------------------------------------------------------------------------
+
+_SCENE_MERGE_READY = [
+    (
+        "Ze propeller sputters to a halt. PhiedBach climbs down from atop "
+        "ze doghouse, removes his flying goggles, und hangs them on a nail. "
+        "Across ze aerodrome, ze officers' club glows warm. BunBun is already "
+        "inside, a Red Bull sweating on ze counter beside him, his ears "
+        "finally at rest."
+    ),
+    (
+        "Silence settles over ze aerodrome. Ze Sopwith Camel cools on ze "
+        "tarmac, its engine ticking softly. PhiedBach folds his maps und "
+        "tucks them into his coat. From inside ze officers' club, ze faint "
+        "pulse of a synthesizer bassline drifts across ze grass. BunBun has "
+        "put on ze Daft Punks again."
+    ),
+    (
+        "Ze last searchlight blinks off. PhiedBach lowers himself from ze "
+        "rooftop, his Crocs touching damp grass. Ze scarf he insists on "
+        "wearing despite never actually flying trails behind him. He makes "
+        "his way to ze officers' club, where BunBun has already arranged two "
+        "Red Bulls und a small victory formation of crushed cans."
+    ),
+    (
+        "Ze mission is over. PhiedBach slides his spectacles into his breast "
+        "pocket und allows himself a rare smile. Ze doghouse stands quiet "
+        "under ze stars, its purpose fulfilled. Inside ze officers' club, "
+        "BunBun adds another crushed can to ze wobbling tower. Ze tower "
+        "holds. It always holds."
+    ),
+    (
+        "PhiedBach steps down from ze doghouse for ze last time today. Ze "
+        "wind has died. Ze Red Baron is somewhere else, fighting someone "
+        "else's PR. He walks ze short path to ze officers' club, where "
+        "BunBun waits in his usual silence — a ThinkPad open, a Red Bull "
+        "half-finished, ears perfectly still."
+    ),
+]
+
+_SCENE_WATCH_EXIT = [
+    (
+        "Ze radar dish lowers vith a soft creak. PhiedBach climbs down from "
+        "ze doghouse rooftop und stretches. Ze night sky is full of stars, "
+        "und somewhere below, ze code sleeps in its repository. BunBun has "
+        "already gone inside. A single Red Bull can sits on ze railing, "
+        "still cold."
+    ),
+    (
+        "Ze patrol ends. Ze Sopwith Camel's engine falls silent above ze "
+        "trenches. PhiedBach wraps his scarf tighter und descends ze ladder. "
+        "Ze aerodrome is dark now, ze runway outlined only by moonlight. "
+        "Tomorrow there vill be more sorties. But not tonight."
+    ),
+    (
+        "PhiedBach folds his charts, one by one, und stows them in ze wooden "
+        "box beside ze doghouse. Ze wind carries ze faint hum of a "
+        "synthesizer from somewhere inside. BunBun's ThinkPad light is ze "
+        "only glow in ze darkness. Even rabbits need sleep eventually."
+    ),
+    (
+        "Ze antenna retracts into ze doghouse roof. PhiedBach removes his "
+        "flying goggles und blinks at ze quiet sky. No bogeys. No Red Baron. "
+        "Just stars und ze soft tick of a cooling engine. He descends, his "
+        "Crocs finding each rung vith practiced care."
+    ),
+    (
+        "Silence returns to ze aerodrome. Ze doghouse stands watch alone now, "
+        "its occupant gone for ze night. PhiedBach's spectacles rest on ze "
+        "instrument panel. BunBun's Red Bull can collection gleams faintly in "
+        "ze starlight. Ze war vill resume at dawn."
+    ),
+]
+
+_SCENE_EXPORT = [
+    (
+        "Ze black box clicks shut. PhiedBach seals it vith wax — "
+        "rabbit-shaped, naturally — und sets it on ze shelf beside ze "
+        "others. Every flight leaves a record. Every sortie, a story. "
+        "BunBun has already filed ze paperwork."
+    ),
+    (
+        "PhiedBach wraps ze manuscript fragment in oilcloth und ties it "
+        "vith twine. Ze evidence is preserved against rain, fire, und ze "
+        "fog of GitHub. He places it carefully in ze archive beneath ze "
+        "doghouse. BunBun stamps it vith a small ink paw print."
+    ),
+    (
+        "Ze flight recorder data is extracted, catalogued, und sealed. "
+        "PhiedBach holds ze bundle for a moment, feeling its weight — every "
+        "snapshot, every delta, every blocker that came und went. Then he "
+        "sets it down. Ze record speaks for itself."
+    ),
+    (
+        "Ze hangar doors creak shut. Inside, ze export bundle sits under a "
+        "single bare bulb, a complete account of ze sortie. PhiedBach dusts "
+        "off his hands. BunBun thumps once — his way of saying ze archive "
+        "is in order."
+    ),
+    (
+        "PhiedBach locks ze evidence cabinet und pockets ze key. Somewhere "
+        "in that bundle is ze truth of vhat happened — not vhat anyone "
+        "remembers, not vhat ze GitHub UI shows, but vhat actually changed, "
+        "und vhen. That is vhy they built ze doghouse."
+    ),
 ]
 
 _WATCH_OPENING = [
@@ -481,6 +591,8 @@ def snapshot(
         console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_SPECTACLES)}[/dim italic]")
         console.print("[bold green]PhiedBach's Verdict: {verdict}[/bold green]".format(verdict=delta.verdict_display))
         console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_REDBULL)}[/dim italic]")
+        console.print()
+        console.print(f"[dim italic]{_pick(_SCENE_MERGE_READY)}[/dim italic]")
     else:
         console.print(f"\n[bold green]PhiedBach's Verdict: {delta.verdict_display}[/bold green]")
 
@@ -575,6 +687,8 @@ def export(
 
     console.print(f"📦 [bold green]{_pick(_EXPORT_COMPLETE)}[/bold green]")
     console.print(_pick(_EXPORT_SAVED).format(path=out_path))
+    console.print()
+    console.print(f"[dim italic]{_pick(_SCENE_EXPORT)}[/dim italic]")
 
 import time
 
@@ -640,6 +754,8 @@ def watch(
                     console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_SPECTACLES)}[/dim italic]")
                     console.print(f"[bold green]Verdict: {delta.verdict_display}[/bold green]")
                     console.print(f"[dim italic]{_pick(_OFFICERS_CLUB_REDBULL)}[/dim italic]")
+                    console.print()
+                    console.print(f"[dim italic]{_pick(_SCENE_MERGE_READY)}[/dim italic]")
                 else:
                     console.print(f"[bold green]Verdict: {delta.verdict_display}[/bold green]")
 
@@ -659,6 +775,8 @@ def watch(
     except KeyboardInterrupt:
         console.print(f"\n[dim italic]{_pick(_WATCH_EXIT_1)}[/dim italic]")
         console.print(f"[bold red]{_pick(_WATCH_EXIT_2)}[/bold red]")
+        console.print()
+        console.print(f"[dim italic]{_pick(_SCENE_WATCH_EXIT)}[/dim italic]")
 
 if __name__ == "__main__":
     app()
