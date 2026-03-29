@@ -41,7 +41,7 @@ Call out environment constraints earlier and consider dual-mode from day one. Fa
 
 ## Incident: Local test runner missing (pytest not installed)
 
-Timestamp: 2025-11-08 00:00:00
+Timestamp: 2025-11-08 ~00:00:00 (estimated; exact time not recorded)
 
 Task: DP-F-30 / Thread verbs + Debug LLM (tests-first)
 
@@ -56,9 +56,9 @@ Include a lightweight script or Makefile target that ensures a dev venv with pyt
 
 ## Incident: Doghouse Reboot (The Great Pivot)
 
-Timestamp: 2026-03-27
+Timestamp: 2026-03-27 14:00:00 (estimated)
 
-Task: DP-F-21
+Task: DP-F-21 / Doghouse flight recorder reboot
 
 ### Problem
 Project had drifted into "GATOS" and "git-mind" concepts that strayed from the original PhiedBach vision and immediate needs.
@@ -66,14 +66,20 @@ Project had drifted into "GATOS" and "git-mind" concepts that strayed from the o
 ### Resolution
 Rebooted the project to focus on **DOGHOUSE**, the PR flight recorder. Deleted legacy TUI/kernel, implemented hexagonal core, and restored the original lore.
 
+### What could we have done differently
+Established clearer scope boundaries earlier. The pivot from TUI to CLI to git-mind to Doghouse reflects successive scope corrections that could have been one decision with a tighter product brief upfront.
+
 ## Incident: Doghouse Refinement (Ze Radar)
 
-Timestamp: 2026-03-28
+Timestamp: 2026-03-28 15:00:00 (estimated)
 
-Task: Refinement & CodeRabbit Feedback
+Task: DP-F-21 / Refinement & CodeRabbit feedback
 
 ### Problem
 The initial Doghouse cut lacked live monitoring, repro capabilities, and sensitivity to merge conflicts vs. secondary check failures.
 
 ### Resolution
 Implemented `doghouse watch`, `doghouse export`, and the Blocking Matrix. Hardened adapters with timeouts and deduplication. Addressed 54 threads of feedback.
+
+### What could we have done differently
+Include watch/export in the initial cut. The design brief (flight-recorder-brief.md) already described these use cases but they were deferred to a second pass, creating churn when the first review surfaced them as gaps.
