@@ -157,3 +157,43 @@ def test_first_snapshot_always_persists():
 
     service.record_sortie("owner/repo", 1)
     storage.save_snapshot.assert_called_once()
+
+
+def test_local_repo_path_is_forwarded_to_git_adapter():
+    """RecorderService should query local blockers from the selected checkout."""
+    github = MagicMock()
+    github.get_head_sha.return_value = "abc123"
+    github.fetch_blockers.return_value = []
+    github.get_pr_metadata.return_value = {"title": "test"}
+
+    storage = MagicMock()
+    storage.get_latest_snapshot.return_value = None
+
+    git = MagicMock()
+    git.get_local_blockers.return_value = []
+
+    service = RecorderService(github, storage, DeltaEngine(), git=git)
+
+    service.record_sortie("owner/repo", 1, local_repo_path="/tmp/wesley")
+
+    git.get_local_blockers.assert_called_once_with("/tmp/wesley")
+
+
+def test_missing_local_repo_path_skips_local_blocker_collection():
+    """Cross-repo snapshots without a checkout path should stay remote-only."""
+    github = MagicMock()
+    github.get_head_sha.return_value = "abc123"
+    github.fetch_blockers.return_value = []
+    github.get_pr_metadata.return_value = {"title": "test"}
+
+    storage = MagicMock()
+    storage.get_latest_snapshot.return_value = None
+
+    git = MagicMock()
+    git.get_local_blockers.return_value = []
+
+    service = RecorderService(github, storage, DeltaEngine(), git=git)
+
+    service.record_sortie("owner/repo", 1, local_repo_path=None)
+
+    git.get_local_blockers.assert_not_called()

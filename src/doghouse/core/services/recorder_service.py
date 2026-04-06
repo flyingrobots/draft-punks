@@ -24,14 +24,19 @@ class RecorderService:
         self.delta_engine = delta_engine
         self.git = git
 
-    def record_sortie(self, repo: str, pr_id: int) -> tuple[Snapshot, Delta]:
+    def record_sortie(
+        self,
+        repo: str,
+        pr_id: int,
+        local_repo_path: str | None = None,
+    ) -> tuple[Snapshot, Delta]:
         """Capture the current state of a PR and compute the delta against the last snapshot."""
         # 1. Capture current state
         head_sha = self.github.get_head_sha(pr_id)
 
         # Merge remote and local blockers with deduplication
         remote_blockers = self.github.fetch_blockers(pr_id)
-        local_blockers = self.git.get_local_blockers()
+        local_blockers = self.git.get_local_blockers(local_repo_path) if local_repo_path else []
 
         blocker_map = {b.id: b for b in remote_blockers}
         for b in local_blockers:

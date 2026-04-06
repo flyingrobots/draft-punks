@@ -55,6 +55,7 @@ def collect_unresolved_threads(token: str, owner: str, repo: str, number: int) -
             pageInfo { hasNextPage endCursor }
             nodes {
               isResolved
+              isOutdated
               comments(last: 1) {
                 nodes {
                   author { login }
@@ -86,7 +87,7 @@ def collect_unresolved_threads(token: str, owner: str, repo: str, number: int) -
             )
         threads = pr["reviewThreads"]
         for thread in threads["nodes"]:
-            if thread["isResolved"]:
+            if thread["isResolved"] or thread["isOutdated"]:
                 continue
             comments = thread["comments"]["nodes"]
             if not comments:

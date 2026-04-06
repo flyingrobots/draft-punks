@@ -68,6 +68,7 @@ class GhCliAdapter(GitHubPort):
                 }
                 nodes {
                   isResolved
+                  isOutdated
                   comments(first: 1) {
                     nodes {
                       body
@@ -102,7 +103,7 @@ class GhCliAdapter(GitHubPort):
                     .get("reviewThreads", {})
                 )
                 for thread in thread_data.get("nodes", []):
-                    if not thread.get("isResolved"):
+                    if not thread.get("isResolved") and not thread.get("isOutdated"):
                         comments = thread.get("comments", {}).get("nodes", [])
                         if comments:
                             first_comment = comments[0]

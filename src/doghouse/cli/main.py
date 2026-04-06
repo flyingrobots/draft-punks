@@ -589,21 +589,76 @@ def resolve_repo_context(
         owner, name = repo, repo
     return repo, owner, name, pr
 
+
+def _auto_detect_local_repo() -> tuple[str, Path] | None:
+    """Return the current repo full name and top-level path when available."""
+    try:
+        root_res = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=30,
+        )
+        root = Path(root_res.stdout.strip()).resolve()
+        repo_res = subprocess.run(
+            ["gh", "repo", "view", "--json", "name,owner"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=30,
+            cwd=root,
+        )
+        repo_data = json.loads(repo_res.stdout)
+        repo_full_name = f"{repo_data['owner']['login']}/{repo_data['name']}"
+        return repo_full_name, root
+    except Exception:
+        return None
+
+
+def resolve_local_repo_path(target_repo: str, repo_path: Optional[str]) -> Path | None:
+    """Resolve which local checkout should supply git blockers.
+
+    If --repo-path is provided, always use it. Otherwise, only use local git
+    blockers when the current checkout matches the target repo.
+    """
+    if repo_path is not None:
+        candidate = Path(repo_path).expanduser().resolve()
+        if not candidate.exists():
+            raise typer.BadParameter(f"--repo-path does not exist: {candidate}")
+        return candidate
+
+    detected = _auto_detect_local_repo()
+    if detected is None:
+        return None
+
+    detected_repo, detected_root = detected
+    if detected_repo == target_repo:
+        return detected_root
+    return None
+
+
 @app.command()
 def snapshot(
     pr: Optional[int] = typer.Option(None, "--pr", help="PR number to snapshot"),
     repo: Optional[str] = typer.Option(None, "--repo", help="Repository (owner/name)"),
+    repo_path: Optional[str] = typer.Option(
+        None,
+        "--repo-path",
+        help="Local checkout path for git blockers; defaults to the current repo when it matches --repo",
+    ),
     as_json: bool = typer.Option(False, "--json", help="Output machine-readable JSON")
 ):
     """Capture a snapshot of the current PR state and show the delta."""
     repo, repo_owner, repo_name, pr = resolve_repo_context(repo, pr)
+    local_repo_path = resolve_local_repo_path(repo, repo_path)
 
     github = GhCliAdapter(repo_owner=repo_owner, repo_name=repo_name)
     storage = JSONLStorageAdapter()
     engine = DeltaEngine()
     service = RecorderService(github, storage, engine, git=GitAdapter())
 
-    snap, delta = service.record_sortie(repo, pr)
+    snap, delta = service.record_sortie(repo, pr, local_repo_path=str(local_repo_path) if local_repo_path else None)
 
     if as_json:
         output = {
@@ -795,6 +850,11 @@ def export(
 def watch(
     pr: Optional[int] = typer.Option(None, "--pr", help="PR number"),
     repo: Optional[str] = typer.Option(None, "--repo", help="Repository (owner/name)"),
+    repo_path: Optional[str] = typer.Option(
+        None,
+        "--repo-path",
+        help="Local checkout path for git blockers; defaults to the current repo when it matches --repo",
+    ),
     interval: int = typer.Option(180, "--interval", help="Polling interval in seconds")
 ):
     """PhiedBach's Radar: Live monitoring of PR state."""
@@ -802,6 +862,7 @@ def watch(
         console.print("[red]Error: --interval must be at least 1 second.[/red]")
         raise typer.Exit(code=1)
     repo, repo_owner, repo_name, pr = resolve_repo_context(repo, pr)
+    local_repo_path = resolve_local_repo_path(repo, repo_path)
 
     console.print(f"📡 [bold]{random.choice(_WATCH_OPENING).format(repo=repo, pr=pr)}[/bold]")
     console.print(f"[dim]{random.choice(_WATCH_INTERVAL).format(interval=interval)}[/dim]")
@@ -815,7 +876,11 @@ def watch(
 
     try:
         while True:
-            snapshot, delta = service.record_sortie(repo, pr)
+            snapshot, delta = service.record_sortie(
+                repo,
+                pr,
+                local_repo_path=str(local_repo_path) if local_repo_path else None,
+            )
 
             has_changes = delta.added_blockers or delta.removed_blockers or delta.head_changed
             is_first_run = not delta.baseline_sha
